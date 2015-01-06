@@ -1,4 +1,4 @@
 *.pyc
 *.idea
-*,DS_Store
-/instance
+*.DS_Store
+instance/
