@@ -1,0 +1,4 @@
+*.pyc
+*.idea
+*,DS_Store
+/instance
