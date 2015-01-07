@@ -11,13 +11,13 @@ class User:
     def __init__(self, username):
         self.username = username
 
-    def set_password(self, password):
-        self.password = bcrypt.encrypt(password)
-        return self
-
     def find(self):
         user = graph.find_one("User", "username", self.username)
         return user
+
+    def set_password(self, password):
+        self.password = bcrypt.encrypt(password)
+        return self
 
     def verify_password(self, password):
         user = self.find()
@@ -62,7 +62,53 @@ class User:
         post = graph.find_one("Post", "id", post_id)
         graph.create_unique(Relationship(user, "LIKED", post))
 
-# Various functions.
+    def get_similar_users(self):
+        query = """
+        MATCH (u1:User)-[:PUBLISHED]->(:Post)<-[:TAGGED]-(tag:Tag),
+              (u2:User)-[:PUBLISHED]->(:Post)<-[:TAGGED]-(tag)
+        WHERE u1.username = {username} AND u1 <> u2
+        WITH u1, u2, COLLECT(DISTINCT tag.name) AS tags
+        WITH u2, tags, LENGTH(tags) AS len
+        ORDER BY len DESC
+        LIMIT 3
+        RETURN u2.username AS other_user, tags
+        """
+
+        similar = graph.cypher.execute(query, username=self.username)
+        return similar
+
+    def get_commonality_of_user(self, username):
+        query = """
+        MATCH (user1:User {username:{user_profile}}),
+              (user2:User {username:{user_loggedin}})
+        OPTIONAL MATCH (user1)-[:LIKED]->(post:Post)<-[:PUBLISHED]-(user2)
+        OPTIONAL MATCH (user1)-[:PUBLISHED]->(:Post)<-[:TAGGED]-(tag:Tag),
+                       (user2)-[:PUBLISHED]->(:Post)<-[:TAGGED]-(tag)
+        RETURN COUNT(post) AS likes, COLLECT(DISTINCT tag.name) AS tags
+        """
+
+        result = graph.cypher.execute(query,
+                                      user_profile=username,
+                                      user_loggedin=self.username)
+
+        result = result[0]
+        likes = result.likes
+        tags = result.tags
+
+        response = '{} has liked {} of your posts and '.format(username, likes)
+
+        if len(tags) == 0:
+            response = response + ' does not blog about any of the same tags.'
+        else:
+            response = response + \
+                       ' also blogs about ' + \
+                        oxford_comma(tags)
+        return response
+
+
+## Various functions.
+
+# For the profile/<username> view.
 def get_users_recent_posts(username):
     query = """
     MATCH (:User {username:{username}})-[:PUBLISHED]->(post:Post)
@@ -80,6 +126,7 @@ def get_users_recent_posts(username):
     posts = graph.cypher.execute(query, username=username)
     return posts
 
+# For the / view.
 def get_global_recent_posts():
     query = """
     MATCH (post:Post)
@@ -99,21 +146,7 @@ def get_global_recent_posts():
     posts = graph.cypher.execute(query)
     return posts
 
-def get_similar_users(username):
-    query = """
-    MATCH (u1:User)-[:PUBLISHED]->(:Post)<-[:TAGGED]-(tag:Tag),
-          (u2:User)-[:PUBLISHED]->(:Post)<-[:TAGGED]-(tag)
-    WHERE u1.username = {username} AND u1 <> u2
-    WITH u1, u2, COLLECT(DISTINCT tag.name) AS tags
-    WITH u2, tags, LENGTH(tags) AS len
-    ORDER BY len DESC
-    LIMIT 3
-    RETURN u2.username AS other_user, tags
-    """
-
-    similar = graph.cypher.execute(query, username=username)
-    return similar
-
+# Helper functions.
 def oxford_comma(words):
     if len(words) == 1:
         response = words[0] + '.'
@@ -124,38 +157,11 @@ def oxford_comma(words):
 
     return response
 
-def get_common_bw_two_users(username1, username2):
-    query = """
-    MATCH (user1:User {username:{username1}}),
-          (user2:User {username:{username2}})
-    OPTIONAL MATCH (user1)-[:LIKED]->(post:Post)<-[:PUBLISHED]-(user2)
-    OPTIONAL MATCH (user1)-[:PUBLISHED]->(:Post)<-[:TAGGED]-(tag:Tag),
-                   (user2)-[:PUBLISHED]->(:Post)<-[:TAGGED]-(tag)
-    RETURN COUNT(post) AS likes, COLLECT(tag.name) AS tags
-    """
-
-    result = graph.cypher.execute(query,
-                                  username1=username1,
-                                  username2=username2)
-
-    result = result[0]
-    likes = result.likes
-    tags = result.tags
-
-    response = '{} has liked {} of your posts and '.format(username1, likes)
-
-    if len(tags) == 0:
-        response = response + ' does not blog about any of the same tags.'
-    else:
-        response = response + \
-                   ' also blogs about ' + \
-                    oxford_comma(tags)
-    return response
-
 def timestamp_to_date(timestamp):
     date = datetime.fromtimestamp(timestamp).strftime('%Y-%m-%d')
     return date
 
+# Uniqueness constraints.
 def init_db():
     graph.schema.create_uniqueness_constraint("User", "username")
     graph.schema.create_uniqueness_constraint("Post", "id")

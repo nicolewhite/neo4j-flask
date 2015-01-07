@@ -69,10 +69,14 @@ def profile(username):
     common = []
 
     if session['logged_in']:
-        if session['username'] == username:
-            similar = get_similar_users(session['username'])
+        user = User(session['username'])
+        # If they're visiting their own profile, show similar users.
+        if user.username == username:
+            similar = user.get_similar_users()
+        # If they're visiting another user's profile, show what they have in common
+        # with that user.
         else:
-            common = get_common_bw_two_users(username, session['username'])
+            common = user.get_commonality_of_user(username)
 
     return render_template(
         'profile.html',
