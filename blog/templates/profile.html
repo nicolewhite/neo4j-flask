@@ -1,54 +1,38 @@
 {% extends "layout.html" %}
 {% block body %}
 
-<h2>{{ username }}</h2><br>
+<h2>{{ username }}'s profile</h2>
 
-  {% if session.username == username %}
+{% if session.logged_in %}
+    {% if session.username == username %}
+        <h3>Users similar to you:</h3>
 
-    <form action="{{ url_for('add_post', username=session.username) }}" method=post class=add-post>
-        <b>Title</b>:<br>
-        <input type=text size=30 name=title><br>
-        <b>Tags</b> (separated by commas):<br>
-        <input type=text size=30 name=tags><br>
-        <b>Text</b>:<br>
-        <textarea name=text rows=5 cols=40></textarea><br>
-        <input type=submit value=Share>
-    </form>
+          {% for user in similar %}
+            <p>
+            <a href="{{ url_for('profile', username=user.similar_user) }}">{{ user.similar_user }}</a>
+            also blogs about <i>{{ ', '.join(user.tags) }}</i>
+            </p>
+          {% else %}
+            <p>There aren't any users who've blogged about the same tags as you!</p>
+          {% endfor %}
 
-  <br>
+        <h3>Your recent posts:</h3>
 
-  <b>Users similar to you</b>:<br><br>
+    {% else %}
 
-  {% for user in similar %}
-    <a href="{{ url_for('profile', username=user.other_user) }}">{{ user.other_user }}</a> also blogs about <i>{{ ', '.join(user.tags) }}</i><br>
-  {% endfor %}
+  <p>{{ username }} has liked {{ common.likes }} of your posts and
+      {% if common.tags %}
+      also blogs about <i>{{ ', '.join(common.tags) }}</i>
+      {% else %}
+      hasn't blogged about any of the same tags
+      {% endif %}
+  </p>
 
-  <br>
+  <h3>{{ username }}'s recent posts:</h3>
 
-  <b>Your most recent posts</b>:<br>
+    {% endif %}
+{% endif %}
 
-  {% else %}
+{% include "display_posts.html" %}
 
-  {{ common }}<br><br>
-
-  <b>{{ username }}'s most recent posts</b>:<br>
-
-  {% endif %}
-
-  <ul class=posts>
-
-  {% for post in posts %}
-    <li>
-      <b>{{ post.title }}</b> 
-      on {{ post.date }} 
-      <a href="{{ url_for('like_post', post_id=post.id) }}">like</a>
-      <br>
-      <i>{{ ', '.join(post.tags) }}</i>
-      <br>
-      {{ post.text }} 
-  {% else %}
-    <li>{{ username }} doesn't have any posts!
-  {% endfor %}
-
-  </ul>
 {% endblock %}

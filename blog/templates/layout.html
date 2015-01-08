@@ -4,7 +4,10 @@
 <div class=page>
   <h1>My Blogging Site</h1>
   <div class=metanav>
-    <a href="{{ url_for('index') }}">Home</a>
+  {% if session.username %}
+  Logged in as {{ session.username }}
+  {% endif %}
+  <a href="{{ url_for('index') }}">Home</a>
   {% if not session.username %}
     <a href="{{ url_for('register') }}">Register</a>
     <a href="{{ url_for('login') }}">Login</a>

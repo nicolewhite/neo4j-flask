@@ -5,7 +5,7 @@ from flask import request, session, redirect, url_for, \
 
 @app.route('/')
 def index():
-    posts = get_global_recent_posts()
+    posts = get_todays_recent_posts()
     return render_template('index.html', posts=posts)
 
 @app.route('/register', methods=['GET','POST'])
@@ -43,13 +43,12 @@ def login():
             session['logged_in'] = True
             session['username'] = user.username
             flash('Logged in.')
-            return redirect(url_for('profile', username=username))
+            return redirect(url_for('index', username=username))
 
     return render_template('login.html', error=error)
 
 @app.route('/logout', methods=['GET'])
 def logout():
-    session.pop('logged_in', None)
     session.pop('username', None)
     flash('Logged out.')
     return redirect(url_for('index'))
@@ -85,7 +84,7 @@ def profile(username):
     similar = []
     common = []
 
-    if session['logged_in']:
+    if session.get('username'):
         user = User(session['username'])
         # If they're visiting their own profile, show similar users.
         if user.username == username:

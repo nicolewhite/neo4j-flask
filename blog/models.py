@@ -35,20 +35,17 @@ class User:
             return False
 
     def add_post(self, title, tags, text):
-        from datetime import datetime
         import uuid
 
         user = self.find()
-
         post = Node(
             "Post",
             id=str(uuid.uuid4()),
             title=title,
             text=text,
-            timestamp=int(datetime.now().strftime('%s')),
-            date=datetime.now().strftime('%Y-%m-%d')
+            timestamp=timestamp(),
+            date=date()
         )
-
         rel = Relationship(user, "PUBLISHED", post)
         graph.create(rel)
 
@@ -84,21 +81,23 @@ class User:
         # Find how many of the logged-in user's posts the other user
         # has liked and which tags they've both blogged about.
         query = """
-        MATCH (user1:User {username:{user_profile}}),
+        MATCH (user1:User {username:{user_viewing}}),
               (user2:User {username:{user_loggedin}})
         OPTIONAL MATCH (user1)-[:LIKED]->(post:Post)<-[:PUBLISHED]-(user2)
         OPTIONAL MATCH (user1)-[:PUBLISHED]->(:Post)<-[:TAGGED]-(tag:Tag),
                        (user2)-[:PUBLISHED]->(:Post)<-[:TAGGED]-(tag)
-        RETURN COUNT(post) AS likes, COLLECT(DISTINCT tag.name) AS tags
+        RETURN COUNT(DISTINCT post) AS likes, COLLECT(DISTINCT tag.name) AS tags
         """
 
-        common = graph.cypher.execute(query,
-                                      user_profile=username,
+        result = graph.cypher.execute(query,
+                                      user_viewing=username,
                                       user_loggedin=self.username)
 
-        common = common[0]
+        result = result[0]
+        common = dict()
+        common['likes'] = result.likes
+        common['tags'] = result.tags if len(result.tags) > 0 else None
         return common
-
 
 ## Various functions.
 ## These are for the views.
@@ -106,37 +105,48 @@ class User:
 # For the profile/<username> view.
 def get_users_recent_posts(username):
     query = """
-    MATCH (:User {username:{username}})-[:PUBLISHED]->(post:Post)
-    WITH post
-    ORDER BY post.timestamp DESC
-    LIMIT 5
-    MATCH (tag:Tag)-[:TAGGED]->(post)
+    MATCH (:User {username:{username}})-[:PUBLISHED]->(post:Post),
+          (tag:Tag)-[:TAGGED]->(post)
     RETURN post.id AS id,
            post.date AS date,
+           post.timestamp AS timestamp,
            post.title AS title,
            post.text AS text,
            COLLECT(tag.name) AS tags
+    ORDER BY timestamp DESC
+    LIMIT 5
     """
 
     posts = graph.cypher.execute(query, username=username)
     return posts
 
 # For the / view.
-def get_global_recent_posts():
+def get_todays_recent_posts():
     query = """
-    MATCH (post:Post)
-    WITH post
-    ORDER BY post.timestamp DESC
-    LIMIT 5
-    MATCH (user:User)-[:PUBLISHED]->(post),
+    MATCH (post:Post {date: {today}}),
+          (user:User)-[:PUBLISHED]->(post),
           (tag:Tag)-[:TAGGED]->(post)
     RETURN user.username AS username,
            post.id AS id,
            post.date AS date,
+           post.timestamp AS timestamp,
            post.title AS title,
            post.text AS text,
            COLLECT(tag.name) AS tags
+    ORDER BY timestamp DESC
+    LIMIT 5
     """
 
-    posts = graph.cypher.execute(query)
+    posts = graph.cypher.execute(query, today = date())
     return posts
+
+## Helper functions.
+from datetime import datetime
+
+def timestamp():
+    unix = int(datetime.now().strftime('%s'))
+    return unix
+
+def date():
+    today = datetime.now().strftime('%Y-%m-%d')
+    return today
