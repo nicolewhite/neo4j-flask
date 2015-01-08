@@ -54,6 +54,23 @@ def logout():
     flash('Logged out.')
     return redirect(url_for('index'))
 
+@app.route('/add_post/<username>', methods=['POST'])
+def add_post(username):
+    user = User(session['username'])
+    title = request.form['title']
+    text = request.form['text']
+    tags = request.form['tags']
+
+    if title == '':
+        abort(400, 'You must give your post a title.')
+    if tags == '':
+        abort(400, 'You must give your post at least one tag.')
+    if text == '':
+        abort(400, 'You must give your post a texy body.')
+
+    user.add_post(title, tags, text)
+    return redirect(url_for('index'))
+
 @app.route('/like_post/<post_id>', methods=['GET'])
 def like_post(post_id):
     user = User(session['username'])
@@ -85,20 +102,3 @@ def profile(username):
         similar=similar,
         common=common
     )
-
-@app.route('/profile/<username>/add_post', methods=['POST'])
-def add_post(username):
-    user = User(session['username'])
-    title = request.form['title']
-    text = request.form['text']
-    tags = request.form['tags']
-
-    if title == '':
-        abort(400, 'You must give your post a title.')
-    if tags == '':
-        abort(400, 'You must give your post at least one tag.')
-    if text == '':
-        abort(400, 'You must give your post a texy body.')
-
-    user.add_post(title, tags, text)
-    return redirect(url_for('profile', username=username))
