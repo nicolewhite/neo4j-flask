@@ -1,5 +1,19 @@
 {% extends "layout.html" %}
 {% block body %}
+  {% if session.username %}
+    <form action="{{ url_for('add_post', username=session.username) }}" method=post class=add-post>
+        <b>Title</b>:<br>
+        <input type=text size=30 name=title><br>
+        <b>Tags</b> (separated by commas):<br>
+        <input type=text size=30 name=tags><br>
+        <b>Text</b>:<br>
+        <textarea name=text rows=5 cols=40></textarea><br>
+        <input type=submit value=Share>
+    </form>
+  {% endif %}
+
+<br>
+
 <h2>Recent Posts</h2>
   <ul class=posts>
   {% for post in posts %}
@@ -9,7 +23,7 @@
     	on {{ post.date }} 
     	<a href="{{ url_for('like_post', post_id=post.id) }}">like</a>
     	<br>
-    	<i>{{ ','.join(post.tags) }}</i>
+    	<i>{{ ', '.join(post.tags) }}</i>
     	<br>
     	{{ post.text }} 
   {% else %}
