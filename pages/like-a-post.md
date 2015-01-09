@@ -1,7 +1,7 @@
 ---
 layout: default
 title: Like a Post
-index: 8
+index: 9
 ---
 
 # Liking a Post
@@ -17,7 +17,7 @@ def like_post(post_id):
     return redirect(request.referrer)
 ```
 
-Again, a `User` object is initialized with the currently-logged-in user's username, and the `User.like_post()` method is called, which is defined within the `User` class in `models.py`:
+A `User` object is initialized with the logged-in user's username, and the `User.like_post()` method is called, which is defined within the `User` class in `models.py`:
 
 ```python
 class User:
@@ -30,9 +30,9 @@ class User:
         graph.create_unique(Relationship(user, "LIKED", post))
 ```
 
-Both `user` and `post` are py2neo `Node` objects, and this time we'll pass a `Relationship` object to the [`Graph.create_unique()`](http://py2neo.org/2.0/essentials.html#py2neo.Graph.create_unique) method to create the `(:User)-[:LIKED]->(:Post)` in the database if it doesn't exist yet. This'll prevent someone from liking a post more than once.
+Both `user` and `post` are `py2neo.Node` objects. We'll pass a `py2neo.Relationship` object to the [`Graph.create_unique()`](http://py2neo.org/2.0/essentials.html#py2neo.Graph.create_unique) method to create the `(:User)-[:LIKED]->(:Post)` relationship in the database if it doesn't exist yet. This'll prevent someone from liking a post more than once.
 
-The link that sends the request is defined in the `display_posts.html` template:
+The link that sends the request is defined in the `display_posts.html` template, which you already saw in the previous section:
 
 {% raw %}
 ```html
@@ -54,6 +54,6 @@ The link that sends the request is defined in the `display_posts.html` template:
 ```
 {% endraw %}
 
-When a user clicks the link, the `GET` request is sent to `/like_post/<post_id>`, and `post_id` is replaced with the id of the post.
+When a user clicks the link, the `GET` request is sent to `/like_post/<post_id>`, and `<post_id>` is replaced with the id of the post.
 
 <p align="right"><a href="{{ site.baseurl }}/pages/similarity-between-users.html">Next: Similarities Between Users</a></p>

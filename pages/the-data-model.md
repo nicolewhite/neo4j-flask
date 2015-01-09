@@ -6,7 +6,7 @@ index: 4
 
 # The Data Model
 
-To store information about our users and their acitivites on or our social blogging application, let's think about how we'll want to model this data. For this example, we'll have User, Post, and Tag nodes. Conceptually, I want to capture users publishing posts, tags tagging posts, and users liking posts. In Neo4j, this will look like:
+To store information about our users and their acitivites on or our social blogging application, let's think about how we'll want to model this data. For this example, we'll have User, Post, and Tag nodes. Conceptually, we want to capture users publishing posts, tags tagging posts, and users liking posts. In Neo4j, this will look like:
 
 <img width="100%" height="100%" src="http://i.imgur.com/9Nuvbpz.png">
 

@@ -1,7 +1,7 @@
 ---
 layout: default
 title: Similarities Between Users
-index: 9
+index: 10
 ---
 
 When a user visits their own profile, we want to recommend other users whose posts the logged-in user might enjoy reading. To do so, we'll write a Cypher query that finds users most similar to the logged-in user based on the number of tags they've mutually posted about. On the other hand, when the logged-in user visits another user's profile, we want to display what the two users have in common. For this, we'll write a Cypher query that finds how many of the logged-in user's posts the other user has liked, along with which tags they've mutually posted about. The `/profile/<username>` view is defined in `views.py`:
@@ -81,7 +81,7 @@ class User:
         return common
 ```
 
-The results of [`Graph.cypher.execute()`](http://py2neo.org/2.0/cypher.html#py2neo.cypher.CypherResource.execute) is a [`RecordList`](http://py2neo.org/2.0/cypher.html#py2neo.cypher.RecordList), of which each element is a [`Record`](http://py2neo.org/2.0/cypher.html#py2neo.cypher.Record). Both `common` and `similar` are passed to the `profile.html` template, which displays whichever is appropriate (`similar` is diplayed if the user is viewing their own profile, and `common` is displayed if they're visiting someone else's profile):
+Both `common` and `similar` are passed to the `profile.html` template, which displays whichever is appropriate (`similar` is diplayed if the user is viewing their own profile, and `common` is displayed if they're visiting someone else's profile):
 
 {% raw %}
 ```html
@@ -126,10 +126,6 @@ The results of [`Graph.cypher.execute()`](http://py2neo.org/2.0/cypher.html#py2n
 ```
 {% endraw %}
 
-When returning a collection in Cypher, e.g. `COLLECT(DISTINCT tag.name) AS tags`, it is returned as a list. A minimal amount of Python code can be used within the templates; above, I use `', '.join(array)` to convert the list to a string where the values are separated by commas.
+If a user is visiting their own profile, similar users are displayed with links to their profiles.
 
-<p>
-<span class="p" style="float:left">left </span>
-<span class="p" style="float:right">right </span>
-</p>
-
+<p align="right"><a href="{{ site.baseurl }}/pages/logout-a-user.html">Next: Logout a User</a></p>

@@ -104,4 +104,4 @@ The form where a user adds a new post is located in `index.html`:
 ```
 {% endraw %}
 
-<p align="right"><a href="{{ site.baseurl }}/pages/like-a-post.html">Next: Like a Post</a></p>
+<p align="right"><a href="{{ site.baseurl }}/pages/display-posts.html">Next: Display Posts</a></p>

@@ -1,7 +1,7 @@
 ---
 layout: default
 title: Logout a User
-index: 10
+index: 11
 ---
 
 # Logout a User
