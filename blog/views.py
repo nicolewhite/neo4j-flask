@@ -49,6 +49,7 @@ def login():
 
 @app.route('/logout', methods=['GET'])
 def logout():
+    session.pop('logged_in')
     session.pop('username', None)
     flash('Logged out.')
     return redirect(url_for('index'))
@@ -84,7 +85,7 @@ def profile(username):
     similar = []
     common = []
 
-    if session.get('username'):
+    if session['logged_in']:
         user = User(session['username'])
         # If they're visiting their own profile, show similar users.
         if user.username == username:
