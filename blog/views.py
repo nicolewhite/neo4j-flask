@@ -40,7 +40,6 @@ def login():
         elif not user.verify_password(password):
             error = 'That password is incorrect.'
         else:
-            session['logged_in'] = True
             session['username'] = user.username
             flash('Logged in.')
             return redirect(url_for('index', username=username))
@@ -49,7 +48,6 @@ def login():
 
 @app.route('/logout', methods=['GET'])
 def logout():
-    session.pop('logged_in')
     session.pop('username', None)
     flash('Logged out.')
     return redirect(url_for('index'))
@@ -85,7 +83,7 @@ def profile(username):
     similar = []
     common = []
 
-    if session['logged_in']:
+    if session.get('username'):
         user = User(session['username'])
         # If they're visiting their own profile, show similar users.
         if user.username == username:

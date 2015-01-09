@@ -3,7 +3,7 @@
 
 <h2>{{ username }}'s profile</h2>
 
-{% if session.logged_in %}
+{% if session.username %}
     {% if session.username == username %}
         <h3>Users similar to you:</h3>
 
