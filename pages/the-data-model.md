@@ -19,3 +19,5 @@ CREATE CONSTRAINT ON (t:Tag) ASSERT t.name IS UNIQUE;
 ```
 
 Next, we'll go through each view defined in `views.py` and discuss the corresponding logic in `models.py`.
+
+<p align="right"><a href="{{ site.baseurl }}/pages/register-a-user.html">Next: Register a User</a></p>

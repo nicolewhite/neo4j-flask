@@ -92,3 +92,5 @@ Finally, to fully understand the registration procedure we should take a look at
 {% endraw %}
 
 Recall in `views.py` that the `register()` method defined a variable `error` with a string telling the user what they did wrong. The variables passed along with `render_template()` can be accessed with the double curly braces in the respective template `.html` file. If `error` is not `None`, then it is displayed to the visitor. The form sends a `POST` request to the `/register` view due to {% raw %}`action="{{ url_for('register') }}"`{% endraw %}, where [`url_for()`](http://flask.pocoo.org/docs/0.10/api/#flask.url_for) is a Flask method for accessing URLs defined in view functions. The form's data is accessed with the input's names; for example, the string that the user types into the `username` text box is accessed with `request.form['username']` in `views.py`.
+
+<p align="right"><a href="{{ site.baseurl }}/pages/login-a-user.html">Next: Login a User</a></p>

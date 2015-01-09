@@ -41,3 +41,5 @@ As suggested by Flask's documentation, these dependences should be stored in a t
 ```
 pip freeze > requirements.txt
 ```
+
+<p align="right"><a href="{{ site.baseurl }}/pages/the-data-model.html">Next: The Data Model</a></p>

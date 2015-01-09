@@ -68,3 +68,5 @@ The `login.html` template is nearly identical to the `register.html` template, w
 {% endblock %}
 ```
 {% endraw %}
+
+<p align="right"><a href="{{ site.baseurl }}/pages/add-a-post.html">Next: Add a Post</a></p>

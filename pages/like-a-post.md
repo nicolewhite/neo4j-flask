@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Liking a Post
+title: Like a Post
 index: 8
 ---
 
@@ -55,3 +55,5 @@ The link that sends the request is defined in the `display_posts.html` template:
 {% endraw %}
 
 When a user clicks the link, the `GET` request is sent to `/like_post/<post_id>`, and `post_id` is replaced with the id of the post.
+
+<p align="right"><a href="{{ site.baseurl }}/pages/similarity-between-users.html">Next: Similarities Between Users</a></p>

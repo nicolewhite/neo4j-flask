@@ -16,3 +16,10 @@ def logout():
     flash('Logged out.')
     return redirect(url_for('index'))
 ```
+
+This removes `logged_in` and `username` from the session and takes the visitor back to the home page. Once logged out, the visitor won't see any of the similarities shown in the previous section when visiting their own or someone else's profile.
+
+<p>
+<span class="p" style="float:left">left </span>
+<span class="p" style="float:right">right </span>
+</p>

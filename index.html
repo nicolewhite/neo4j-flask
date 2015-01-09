@@ -1,16 +1,19 @@
 ---
 layout: default
+main: yes
 ---
 
 <p>I recommend that you read through Flask's <a href="http://flask.pocoo.org/docs/0.10/quickstart/">quickstart</a> guide before reading this tutorial.</p>
 
-{% assign posts = site.posts | sort:"index"  %}
+{% assign posts = site.pages | sort:"index"  %}
 <ol type="1">
   {% for post in posts %}
+    {% if post.main == yes %}
     <li>
-      <a {% if post.url == page.url %}class="active"{% endif %} href="{{ post.url }}">
+      <a {% if post.url == page.url %}class="active"{% endif %} href="{{ site.baseurl }}{{ post.url }}">
         {{ post.title }}
       </a>
     </li>
+    {% endif %}
   {% endfor %}
 </ol>

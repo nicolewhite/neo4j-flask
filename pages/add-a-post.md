@@ -1,10 +1,10 @@
 ---
 layout: default
-title: Adding a Post
+title: Add a Post
 index: 7
 ---
 
-# Adding a Post
+# Add a Post
 
 Once a user has successfully logged in, they're redirected to the `/` view, the home page. When `session.username` is not `None`, a form is displayed that allows the user to share a post. This form sends a `POST` request with the title, text, and tags of the post to the `/add_post/<username>` view, where `<username>` is replaced with the logged-in-user's username. In `views.py`, this view is defined by the following:
 
@@ -103,3 +103,5 @@ The form where a user adds a new post is located in `index.html`:
 {% endblock %}
 ```
 {% endraw %}
+
+<p align="right"><a href="{{ site.baseurl }}/pages/like-a-post.html">Next: Like a Post</a></p>

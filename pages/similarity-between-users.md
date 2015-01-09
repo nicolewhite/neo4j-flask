@@ -4,7 +4,7 @@ title: Similarities Between Users
 index: 9
 ---
 
-When a user visits their own profile, we want to recommend other users whose posts the logged-in user might enjoy reading. To do so, we'll write a Cypher query that finds users most similar to the logged-in user based on the number of tags they've mutually posted about. On the other hand, when a user visits another user's profile, we want to display what the two users have in common. For this, we'll write a Cypher query that finds how many of the logged-in user's posts the viewee has liked, along with which tags they've mutually posted about. The `/profile/<username>` view is defined in `views.py`:
+When a user visits their own profile, we want to recommend other users whose posts the logged-in user might enjoy reading. To do so, we'll write a Cypher query that finds users most similar to the logged-in user based on the number of tags they've mutually posted about. On the other hand, when the logged-in user visits another user's profile, we want to display what the two users have in common. For this, we'll write a Cypher query that finds how many of the logged-in user's posts the other user has liked, along with which tags they've mutually posted about. The `/profile/<username>` view is defined in `views.py`:
 
 ```python
 @app.route('/profile/<username>', methods=['GET'])
@@ -67,7 +67,7 @@ class User:
         OPTIONAL MATCH (user1)-[:PUBLISHED]->(:Post)<-[:TAGGED]-(tag:Tag),
                        (user2)-[:PUBLISHED]->(:Post)<-[:TAGGED]-(tag)
         RETURN COUNT(DISTINCT post) AS likes, 
-        	   COLLECT(DISTINCT tag.name) AS tags
+        	     COLLECT(DISTINCT tag.name) AS tags
         """
 
         result = graph.cypher.execute(query,
@@ -125,3 +125,11 @@ The results of [`Graph.cypher.execute()`](http://py2neo.org/2.0/cypher.html#py2n
 {% endblock %}
 ```
 {% endraw %}
+
+When returning a collection in Cypher, e.g. `COLLECT(DISTINCT tag.name) AS tags`, it is returned as a list. A minimal amount of Python code can be used within the templates; above, I use `', '.join(array)` to convert the list to a string where the values are separated by commas.
+
+<p>
+<span class="p" style="float:left">left </span>
+<span class="p" style="float:right">right </span>
+</p>
+
