@@ -36,7 +36,7 @@ six==1.9.0
 wsgiref==0.1.2
 ```
 
-As suggested by Flask's documentation, these dependences should be stored in a text file called `requirements.txt`:
+As suggested by Flask's documentation, these dependencies should be stored in a text file called `requirements.txt`:
 
 ```
 pip freeze > requirements.txt
