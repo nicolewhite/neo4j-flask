@@ -4,7 +4,7 @@ title: Like a Post
 index: 9
 ---
 
-# Liking a Post
+# Like a Post
 
 On both the home page (the `/` view) and a user's profile page (the `/profile/<username>` view), a series of posts is displayed accompanied with a link beside each post to 'like' the post. Clicking this link sends a `GET` request to the `/like_post/<post_id>` view, which is defined as:
 

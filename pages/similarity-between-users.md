@@ -4,6 +4,8 @@ title: Similarities Between Users
 index: 10
 ---
 
+# Similarities Between Users
+
 When a user visits their own profile, we want to recommend other users whose posts the logged-in user might enjoy reading. To do so, we'll write a Cypher query that finds users most similar to the logged-in user based on the number of tags they've mutually posted about. On the other hand, when the logged-in user visits another user's profile, we want to display what the two users have in common. For this, we'll write a Cypher query that finds how many of the logged-in user's posts the other user has liked, along with which tags they've mutually posted about. The `/profile/<username>` view is defined in `views.py`:
 
 ```python
@@ -19,8 +21,8 @@ def profile(username):
         # If they're visiting their own profile, show similar users.
         if user.username == username:
             similar = user.get_similar_users()
-        # If they're visiting another user's profile, 
-        # show what they have in common with that user.
+        # If they're visiting another user's profile, show what they have in common
+        # with that user.
         else:
             common = user.get_commonality_of_user(username)
 
@@ -66,8 +68,7 @@ class User:
         OPTIONAL MATCH (user1)-[:LIKED]->(post:Post)<-[:PUBLISHED]-(user2)
         OPTIONAL MATCH (user1)-[:PUBLISHED]->(:Post)<-[:TAGGED]-(tag:Tag),
                        (user2)-[:PUBLISHED]->(:Post)<-[:TAGGED]-(tag)
-        RETURN COUNT(DISTINCT post) AS likes, 
-        	     COLLECT(DISTINCT tag.name) AS tags
+        RETURN COUNT(DISTINCT post) AS likes, COLLECT(DISTINCT tag.name) AS tags
         """
 
         result = graph.cypher.execute(query,
