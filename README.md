@@ -1,4 +1,4 @@
-# neo4j-blog-flask
+# neo4j-flask
 An example blogging application written in Python powered by Flask and Neo4j.
 
 ## Usage
