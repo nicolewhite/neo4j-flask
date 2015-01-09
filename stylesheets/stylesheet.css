@@ -120,6 +120,10 @@ a {
 
 a:hover, a:focus {text-decoration: underline;}
 
+a code {
+  color: #007edf;
+}
+
 footer a {
   color: #F2F2F2;
   text-decoration: underline;

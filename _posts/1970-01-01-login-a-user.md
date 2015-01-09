@@ -1,10 +1,10 @@
 ---
 layout: default
-title: Login A User
+title: Login a User
 index: 6
 ---
 
-# Login A User
+# Login a User
 
 Now that users are able to register for an account, we can define the view that allows them to login to the site and start a [session](http://flask.pocoo.org/docs/0.10/quickstart/#sessions). In `views.py`, my `/login` view is defined by the following:
 
@@ -30,7 +30,7 @@ def login():
     return render_template('login.html', error=error)
 ```
 
-The code here should look similar to the `/register` view. There is a similar form to fill out on `login.html`, where a user types in their username and password. With the given username, a `User` object is initialized. If the user is not found, then we tell the user that a user with that username does not exist. If the user is found, then the password they filled out in the form is [verified against the hashed password](https://pythonhosted.org/passlib/lib/passlib.hash.bcrypt.html) stored on the `User` node in the database. If the verification is successful, a `session` object is created and the `username` is set to the given username and `logged_in` is set to `True`. The user is then directed to their profile, which will be shown next. In `models.py`, the `User.verify_password()` method is defined as:
+The code here should look similar to the `/register` view. There is a similar form to fill out on `login.html`, where a user types in their username and password. With the given username, a `User` object is initialized. If the user is not found, then we tell the user that a user with that username does not exist. If the user is found, then the password they filled out in the form is verified with [`bcrypt.verify()`](https://pythonhosted.org/passlib/lib/passlib.hash.bcrypt.html) against the hashed password with that was retrieved from the corresponding User node in the database. If the verification is successful, a `session` object is created and `session['username']` is set to the given username and `session['logged_in']` is set to `True`. The `session` object allows us to follow the user through requests. The user is then directed to the home page, on which they can add their first post. In `models.py`, the `User.verify_password()` method is defined as:
 
 ```python
 class User:
@@ -45,7 +45,7 @@ class User:
             return False
 ```
 
-Note that node properties can be retrieved just as you would retrieve values from a Python dictionary. In this case, I got the password property off of the Node object with `user['password']`.
+Note that node properties can be retrieved just as you would retrieve values from a Python dictionary. In this case, I got the password property off of the `user` object, which recall is a `py2neo.Node` object, with `user['password']`.
 
 The `login.html` template is nearly identical to the `register.html` template, with the exception of the form's action (which sends a `POST` request to the `/login` view):
 
