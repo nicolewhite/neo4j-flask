@@ -58,7 +58,7 @@ In the templates of `index.html` (shown in the previous section) and `profile.ht
 ```
 {% endraw %}
 
-to display these posts. `display_posts.html` looks like this, and using `include` simply inserts this code:
+`display_posts.html` looks like this, and using `include` simply inserts this code:
 
 {% raw %}
 ```html
