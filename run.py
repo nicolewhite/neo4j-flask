@@ -1,2 +1,2 @@
 from blog import *
-app.run(debug=True)
+app.run()
