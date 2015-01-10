@@ -2,7 +2,7 @@ from py2neo import Graph, Node, Relationship
 from passlib.hash import bcrypt
 import os
 
-graph = Graph(os.environ['GRAPHENEDB_URL'])
+graph = Graph(os.environ.get('GRAPHENEDB_URL', 'http://localhost:7474/db/data/'))
 
 ## The User class.
 ## This class is for handling the currently-logged-in user.
