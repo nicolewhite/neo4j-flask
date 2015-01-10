@@ -1,7 +1,8 @@
 from py2neo import Graph, Node, Relationship
 from passlib.hash import bcrypt
+import os
 
-graph = Graph()
+graph = Graph(os.environ['GRAPHENEDB_URL'])
 
 ## The User class.
 ## This class is for handling the currently-logged-in user.
