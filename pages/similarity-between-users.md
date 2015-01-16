@@ -41,7 +41,7 @@ In `models.py`:
 class User:
 
 	...
-
+  
     def get_similar_users(self):
         # Find three users who are most similar to the logged-in user
         # based on tags they've both blogged about.
@@ -49,10 +49,8 @@ class User:
         MATCH (u1:User)-[:PUBLISHED]->(:Post)<-[:TAGGED]-(tag:Tag),
               (u2:User)-[:PUBLISHED]->(:Post)<-[:TAGGED]-(tag)
         WHERE u1.username = {username} AND u1 <> u2
-        WITH u1, u2, COLLECT(DISTINCT tag.name) AS tags
-        WITH u2, tags, LENGTH(tags) AS len
-        ORDER BY len DESC
-        LIMIT 3
+        WITH u2, COLLECT(DISTINCT tag.name) AS tags, COUNT(DISTINCT tag) AS len
+        ORDER BY len DESC LIMIT 3
         RETURN u2.username AS similar_user, tags
         """
 
