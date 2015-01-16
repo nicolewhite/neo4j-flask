@@ -4,7 +4,7 @@
 <h2>Home</h2>
   {% if session.username %}
     <h3>Share New Post</h3>
-    <form action="{{ url_for('add_post', username=session.username) }}" method=post>
+    <form action="{{ url_for('add_post') }}" method=post>
         <dl>
             <dt>Title:</dt>
             <dd><input type=text size=30 name=title></dd>
