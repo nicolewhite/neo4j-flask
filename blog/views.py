@@ -52,12 +52,12 @@ def logout():
     flash('Logged out.')
     return redirect(url_for('index'))
 
-@app.route('/add_post/<username>', methods=['POST'])
-def add_post(username):
+@app.route('/add_post', methods=['POST'])
+def add_post():
     user = User(session['username'])
     title = request.form['title']
-    text = request.form['text']
     tags = request.form['tags']
+    text = request.form['text']
 
     if title == '':
         abort(400, 'You must give your post a title.')
@@ -71,7 +71,11 @@ def add_post(username):
 
 @app.route('/like_post/<post_id>', methods=['GET'])
 def like_post(post_id):
-    user = User(session['username'])
+    username = session.get('username')
+    if not username:
+        abort(400, 'You must be logged in to like a post.')
+
+    user = User(username)
     user.like_post(post_id)
     flash('Liked post.')
     return redirect(request.referrer)
@@ -83,15 +87,16 @@ def profile(username):
     similar = []
     common = []
 
-    if session.get('username'):
-        user = User(session['username'])
+    viewer_username = session.get('username')
+    if viewer_username:
+        viewer = User(viewer_username)
         # If they're visiting their own profile, show similar users.
-        if user.username == username:
-            similar = user.get_similar_users()
-        # If they're visiting another user's profile, show what they have in common
-        # with that user.
+        if viewer.username == username:
+            similar = viewer.get_similar_users()
+        # If they're visiting another user's profile, show what they
+        # have in common with that user.
         else:
-            common = user.get_commonality_of_user(username)
+            common = viewer.get_commonality_of_user(username)
 
     return render_template(
         'profile.html',
