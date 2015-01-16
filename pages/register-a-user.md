@@ -57,9 +57,7 @@ class User:
         return self
 
     def register(self):
-        if not self.password:
-            return False
-        elif not self.find():
+        if not self.find():
             user = Node("User", username=self.username, password=self.password)
             graph.create(user)
             return True

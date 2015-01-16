@@ -11,7 +11,11 @@ On both the home page (the `/` view) and a user's profile page (the `/profile/<u
 ```python
 @app.route('/like_post/<post_id>', methods=['GET'])
 def like_post(post_id):
-    user = User(session['username'])
+    username = session.get('username')
+    if not username:
+        abort(400, 'You must be logged in to like a post.')
+
+    user = User(username)
     user.like_post(post_id)
     flash('Liked post.')
     return redirect(request.referrer)

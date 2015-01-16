@@ -8,9 +8,19 @@ index: 14
 
 To deploy your application to Heroku, you should first read their [getting started with Python guide](https://devcenter.heroku.com/articles/getting-started-with-python#introduction) so that you are familiar with the deployment process.
 
-Within the same directory that your application sits, 
+Within the same directory that your application sits, in the terminal, execute `heroku create`. This will create a new git remote called `heroku`. Next, you need to add the [GrapheneDB add-on](https://devcenter.heroku.com/articles/graphenedb), which is an easy way to get set up with a Neo4j database on Heroku.
 
-We need to make a few modifications and additions. First, change `run.py` to the following:
+```
+heroku addons:add graphenedb:chalk
+```
+
+Next, you need to add a file in the root directory called `Procfile`, a text file with the following:
+
+```
+web: python run.py
+```
+
+This'll tell Heroku to run `run.py` to start your application. We need to make a few modifications and additions to `run.py`:
 
 ```python
 from blog import *
@@ -20,10 +30,12 @@ port = int(os.environ.get("PORT", 5000))
 app.run(host='0.0.0.0', port=port)
 ```
 
-This will get the `$PORT` environment variable for port assignment. Next, change the initilization of `graph` in `models.py` to the following:
+This will get the `$PORT` environment variable from your Heroku configuration for port assignment. Note that `debug=True` is gone. You don't want to expose your stacktrace in production. Next, change the initilization of `graph` in `models.py` to the following:
 
 ```python
 graph = Graph(os.environ.get('GRAPHENEDB_URL', 'http://localhost:7474') + '/db/data/')
 ```
 
-This will get the `$GRAPHENEDB_URL` environment variable
+This will get the `$GRAPHENEDB_URL` environment variable that is present in your Heroku configuation after adding the GrapheneDB add-on.
+
+Finally, `git push heroku master` will deploy your application.

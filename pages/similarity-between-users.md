@@ -16,15 +16,16 @@ def profile(username):
     similar = []
     common = []
 
-    if session.get('username'):
-        user = User(session['username'])
+    viewer_username = session.get('username')
+    if viewer_username:
+        viewer = User(viewer_username)
         # If they're visiting their own profile, show similar users.
-        if user.username == username:
-            similar = user.get_similar_users()
-        # If they're visiting another user's profile, show what they have in common
-        # with that user.
+        if viewer.username == username:
+            similar = viewer.get_similar_users()
+        # If they're visiting another user's profile, show what they
+        # have in common with that user.
         else:
-            common = user.get_commonality_of_user(username)
+            common = viewer.get_commonality_of_user(username)
 
     return render_template(
         'profile.html',
@@ -46,12 +47,12 @@ class User:
         # Find three users who are most similar to the logged-in user
         # based on tags they've both blogged about.
         query = """
-        MATCH (u1:User)-[:PUBLISHED]->(:Post)<-[:TAGGED]-(tag:Tag),
-              (u2:User)-[:PUBLISHED]->(:Post)<-[:TAGGED]-(tag)
-        WHERE u1.username = {username} AND u1 <> u2
-        WITH u2, COLLECT(DISTINCT tag.name) AS tags, COUNT(DISTINCT tag) AS len
+        MATCH (you:User)-[:PUBLISHED]->(:Post)<-[:TAGGED]-(tag:Tag),
+              (they:User)-[:PUBLISHED]->(:Post)<-[:TAGGED]-(tag)
+        WHERE you.username = {username} AND you <> they
+        WITH they, COLLECT(DISTINCT tag.name) AS tags, COUNT(DISTINCT tag) AS len
         ORDER BY len DESC LIMIT 3
-        RETURN u2.username AS similar_user, tags
+        RETURN they.username AS similar_user, tags
         """
 
         similar = graph.cypher.execute(query, username=self.username)
@@ -61,17 +62,17 @@ class User:
         # Find how many of the logged-in user's posts the other user
         # has liked and which tags they've both blogged about.
         query = """
-        MATCH (user1:User {username:{user_viewing}}),
-              (user2:User {username:{user_loggedin}})
-        OPTIONAL MATCH (user1)-[:LIKED]->(post:Post)<-[:PUBLISHED]-(user2)
-        OPTIONAL MATCH (user1)-[:PUBLISHED]->(:Post)<-[:TAGGED]-(tag:Tag),
-                       (user2)-[:PUBLISHED]->(:Post)<-[:TAGGED]-(tag)
+        MATCH (they:User {username:{they}}),
+              (you:User {username:{you}})
+        OPTIONAL MATCH (they)-[:LIKED]->(post:Post)<-[:PUBLISHED]-(you)
+        OPTIONAL MATCH (they)-[:PUBLISHED]->(:Post)<-[:TAGGED]-(tag:Tag),
+                       (you)-[:PUBLISHED]->(:Post)<-[:TAGGED]-(tag)
         RETURN COUNT(DISTINCT post) AS likes, COLLECT(DISTINCT tag.name) AS tags
         """
 
         result = graph.cypher.execute(query,
-                                      user_viewing=username,
-                                      user_loggedin=self.username)
+                                      they=username,
+                                      you=self.username)
 
         result = result[0]
         common = dict()

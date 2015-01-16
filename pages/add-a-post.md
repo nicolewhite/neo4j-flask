@@ -9,12 +9,12 @@ index: 7
 Once a user has successfully logged in, they're redirected to the `/` view, the home page. When `session.username` is not `None`, a form is displayed that allows the user to share a post. This form sends a `POST` request with the title, text, and tags of the post to the `/add_post/<username>` view, where `<username>` is replaced with the logged-in-user's username. In `views.py`, this view is defined by the following:
 
 ```python
-@app.route('/add_post/<username>', methods=['POST'])
-def add_post(username):
+@app.route('/add_post', methods=['POST'])
+def add_post():
     user = User(session['username'])
     title = request.form['title']
-    text = request.form['text']
     tags = request.form['tags']
+    text = request.form['text']
 
     if title == '':
         abort(400, 'You must give your post a title.')
@@ -82,7 +82,7 @@ The form where a user adds a new post is located in `index.html`:
 <h2>Home</h2>
   {% if session.username %}
     <h3>Share New Post</h3>
-    <form action="{{ url_for('add_post', username=session.username) }}" method=post>
+    <form action="{{ url_for('add_post') }}" method=post>
         <dl>
             <dt>Title:</dt>
             <dd><input type=text size=30 name=title></dd>
