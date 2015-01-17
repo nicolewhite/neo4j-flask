@@ -1,4 +1,4 @@
-from . import app
+from blog import app
 from models import *
 from flask import request, session, redirect, url_for, \
     abort, render_template, flash
