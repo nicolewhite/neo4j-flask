@@ -33,16 +33,15 @@ def login():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
+
         user = User(username)
 
-        if not user.find():
-            error = 'A user with that username does not exist.'
-        elif not user.verify_password(password):
-            error = 'That password is incorrect.'
+        if not user.verify_password(password):
+            error = 'Invalid login.'
         else:
             session['username'] = user.username
             flash('Logged in.')
-            return redirect(url_for('index', username=username))
+            return redirect(url_for('index'))
 
     return render_template('login.html', error=error)
 
