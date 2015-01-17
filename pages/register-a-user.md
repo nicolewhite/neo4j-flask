@@ -11,7 +11,7 @@ Before any content can be created on our blog, users will need to be able to sig
 The registration page is located at `/register` and will accept both `GET` and `POST` requests. A `GET` request will be sent when a visitor lands on the page, and a `POST` request will be sent when they fill out the registration form. In `views.py`, the `/register` view is defined by the following:
 
 ```python
-from . import app
+from blog import app
 from models import *
 from flask import request, session, redirect, url_for, \
     abort, render_template, flash
