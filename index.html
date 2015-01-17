@@ -3,7 +3,7 @@ layout: default
 main: yes
 ---
 
-<p>I recommend that you read through Flask's <a href="http://flask.pocoo.org/docs/0.10/quickstart/">quickstart</a> guide before reading this tutorial. The following is drawn from <a href="http://flask.pocoo.org/docs/0.10/tutorial/">Flask's tutorial</a> on building a microblog application. This tutorial expands the microblog example to include social features, such as tagging posts and recommending similar users.</p>
+<p>I recommend that you read through Flask's <a href="http://flask.pocoo.org/docs/0.10/quickstart/">quickstart</a> guide before reading this tutorial. The following is drawn from <a href="http://flask.pocoo.org/docs/0.10/tutorial/">Flask's tutorial</a> on building a microblog application. This tutorial expands the microblog example to include social features, such as tagging posts and recommending similar users, by using Neo4j instead of SQLite as the backend database.</p>
 
 {% assign posts = site.pages | sort:"index"  %}
 <ol type="1">
