@@ -15,21 +15,20 @@ def login():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
+
         user = User(username)
 
-        if not user.find():
-            error = 'A user with that username does not exist.'
-        elif not user.verify_password(password):
-            error = 'That password is incorrect.'
+        if not user.verify_password(password):
+            error = 'Invalid login.'
         else:
             session['username'] = user.username
             flash('Logged in.')
-            return redirect(url_for('index', username=username))
+            return redirect(url_for('index'))
 
     return render_template('login.html', error=error)
 ```
 
-The code here should look similar to the `/register` view. There is a similar form to fill out on `login.html`, where a user types in their username and password. With the given username, a `User` object is initialized. If the user is not found, then we tell the user that a user with that username does not exist. If the user is found, then the password they filled out in the form is verified with [`bcrypt.verify()`](https://pythonhosted.org/passlib/lib/passlib.hash.bcrypt.html) against the hashed password that was retrieved from the corresponding User node in the database. If the verification is successful it will return `True`, then a `session` object is created and `session['username']` is set to the given username. The `session` object allows us to follow the user through requests. The user is then directed to the home page, on which they can add their first post. In `models.py`, the `User.verify_password()` method is defined as:
+The code here should look similar to the `/register` view. There is a similar form to fill out on `login.html`, where a user types in their username and password. With the given username, a `User` object is initialized. The password they filled out in the form is verified with [`bcrypt.verify()`](https://pythonhosted.org/passlib/lib/passlib.hash.bcrypt.html) against the hashed password that was retrieved from the corresponding User node in the database. If the verification is successful it will return `True`, then a `session` object is created and `session['username']` is set to the given username. The `session` object allows us to follow the user through requests with cookies. The user is then directed to the home page, on which they can add their first post. In `models.py`, the `User.verify_password()` method is defined as:
 
 ```python
 class User:
