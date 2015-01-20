@@ -23,10 +23,11 @@ web: python run.py
 This'll tell Heroku to run `run.py` to start your application. We need to make a few modifications and additions to `run.py`:
 
 ```python
-from blog import *
+from blog import app
 import os
 
-port = int(os.environ.get("PORT", 5000))
+port = int(os.environ.get('PORT', 5000))
+app.secret_key = os.urandom(24)
 app.run(host='0.0.0.0', port=port)
 ```
 
