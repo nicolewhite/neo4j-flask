@@ -7,7 +7,7 @@ An example blogging application written in Python powered by Flask and Neo4j.
 
 ## Usage
 
-Make sure Neo4j is running first!
+Make sure [Neo4j](http://neo4j.com/download/) is running first!
 
 ```
 git clone https://github.com/nicolewhite/neo4j-flask.git
