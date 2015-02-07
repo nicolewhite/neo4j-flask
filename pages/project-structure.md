@@ -26,7 +26,7 @@ blog/
 		display_posts.html
 ```
 
-Recall that we created `requirements.txt` in the previous step. Typically, the bulk of the action will take place in `models.py` (where we'll define classes, methods, etc.) and `views.py` (where we'll define our 'views', or site pages). The `__init__.py` file in the `blog/` directory allows it to be used as a module. That is, you'll be able import it like any other package.
+Recall that we created `requirements.txt` in the previous step. Typically, the bulk of the action will take place in `models.py` (where we'll define classes, methods, etc.) and `views.py` (where we'll define our 'views', or site pages). The `__init__.py` file in the `blog/` directory allows it to be used as a [package](https://exploreflask.com/organizing.html#package).
 
 According to the linked documentation, `__init__.py` within the `blog` directory should be used to "initialize your application and bring together all of the various components." My `__init__.py` thus looks like this:
 
