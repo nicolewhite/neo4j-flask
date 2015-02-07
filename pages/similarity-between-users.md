@@ -50,7 +50,9 @@ class User:
         MATCH (you:User)-[:PUBLISHED]->(:Post)<-[:TAGGED]-(tag:Tag),
               (they:User)-[:PUBLISHED]->(:Post)<-[:TAGGED]-(tag)
         WHERE you.username = {username} AND you <> they
-        WITH they, COLLECT(DISTINCT tag.name) AS tags, COUNT(DISTINCT tag) AS len
+        WITH they, 
+             COLLECT(DISTINCT tag.name) AS tags, 
+             COUNT(DISTINCT tag) AS len
         ORDER BY len DESC LIMIT 3
         RETURN they.username AS similar_user, tags
         """
@@ -67,7 +69,8 @@ class User:
         OPTIONAL MATCH (they)-[:LIKED]->(post:Post)<-[:PUBLISHED]-(you)
         OPTIONAL MATCH (they)-[:PUBLISHED]->(:Post)<-[:TAGGED]-(tag:Tag),
                        (you)-[:PUBLISHED]->(:Post)<-[:TAGGED]-(tag)
-        RETURN COUNT(DISTINCT post) AS likes, COLLECT(DISTINCT tag.name) AS tags
+        RETURN COUNT(DISTINCT post) AS likes, 
+               COLLECT(DISTINCT tag.name) AS tags
         """
 
         result = graph.cypher.execute(query,
