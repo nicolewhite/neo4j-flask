@@ -6,8 +6,7 @@ import uuid
 
 graph = Graph(os.environ.get('GRAPHENEDB_URL', 'http://localhost:7474') + '/db/data/')
 
-## The User class.
-## This class is for handling the logged-in user.
+
 class User:
     def __init__(self, username):
         self.username = username
@@ -36,7 +35,6 @@ class User:
             return False
 
     def add_post(self, title, tags, text):
-
         user = self.find()
         post = Node(
             "Post",
@@ -97,10 +95,7 @@ class User:
         common['tags'] = result.tags if len(result.tags) > 0 else None
         return common
 
-## Various functions.
-## These are for the views.
 
-# For the profile/<username> view.
 def get_users_recent_posts(username):
     query = """
     MATCH (:User {username:{username}})-[:PUBLISHED]->(post:Post),
@@ -118,7 +113,7 @@ def get_users_recent_posts(username):
     posts = graph.cypher.execute(query, username=username)
     return posts
 
-# For the / view.
+
 def get_todays_recent_posts():
     query = """
     MATCH (post:Post {date: {today}}),
@@ -138,12 +133,13 @@ def get_todays_recent_posts():
     posts = graph.cypher.execute(query, today = date())
     return posts
 
-## Helper functions.
 
 def timestamp():
-    unix = int(datetime.now().strftime('%s'))
-    return unix
+    epoch = datetime.utcfromtimestamp(0)
+    now = datetime.now()
+    delta = now - epoch
+    return delta.total_seconds()
+
 
 def date():
-    today = datetime.now().strftime('%Y-%m-%d')
-    return today
+    return datetime.now().strftime('%F')
