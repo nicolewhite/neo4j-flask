@@ -1,6 +1,8 @@
 from py2neo import Graph, Node, Relationship
 from passlib.hash import bcrypt
+from datetime import datetime
 import os
+import uuid
 
 graph = Graph(os.environ.get('GRAPHENEDB_URL', 'http://localhost:7474') + '/db/data/')
 
@@ -34,7 +36,6 @@ class User:
             return False
 
     def add_post(self, title, tags, text):
-        import uuid
 
         user = self.find()
         post = Node(
@@ -138,7 +139,6 @@ def get_todays_recent_posts():
     return posts
 
 ## Helper functions.
-from datetime import datetime
 
 def timestamp():
     unix = int(datetime.now().strftime('%s'))
