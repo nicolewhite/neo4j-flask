@@ -31,12 +31,18 @@ app.secret_key = os.urandom(24)
 app.run(host='0.0.0.0', port=port)
 ```
 
-This will get the `$PORT` environment variable from your Heroku configuration for port assignment. Note that `debug=True` is gone. You don't want to expose your stacktrace in production. Next, change the initilization of `graph` in `models.py` to the following:
+This will get the `PORT` environment variable from your Heroku configuration for port assignment. Note that `debug=True` is gone. You don't want to expose your stacktrace in production. Next, change the following in `models.py`...
 
 ```python
-graph = Graph(os.environ.get('GRAPHENEDB_URL', 'http://localhost:7474') + '/db/data/')
+url = os.environ.get('NEO4J_URL', 'http://localhost:7474')
 ```
 
-This will get the `$GRAPHENEDB_URL` environment variable that is present in your Heroku configuation after adding the GrapheneDB add-on.
+...to:
+
+```python
+url = os.environ.get('GRAPHENEDB_URL', 'http://localhost:7474')
+```
+
+This will get the `GRAPHENEDB_URL` environment variable that is present in your Heroku configuation after adding the GrapheneDB add-on.
 
 Finally, `git push heroku master` will deploy your application.

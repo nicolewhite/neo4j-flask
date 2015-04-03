@@ -59,15 +59,14 @@ class User:
 The user is found in the database with `User.find()`, which returns a `py2neo.Node` object. Then, another `Node` object `post` is created with the shown properties. A random id is generated with the `uuid` package's [`uuid4()`](https://docs.python.org/2/library/uuid.html#uuid.uuid4) method, and the timestamp and date are set with functions I defined elsewhere in `models.py`:
 
 ```python
-from datetime import datetime
-
 def timestamp():
-    unix = int(datetime.now().strftime('%s'))
-    return unix
+    epoch = datetime.utcfromtimestamp(0)
+    now = datetime.now()
+    delta = now - epoch
+    return delta.total_seconds()
 
 def date():
-    today = datetime.now().strftime('%Y-%m-%d')
-    return today
+    return datetime.now().strftime('%F')
 ```
 
 With both the `user` and `post` variables, we can create a `(:User)-[:PUBLISHED]->(:Post)` relationship in the graph by passing a [`py2neo.Relationship`](http://py2neo.org/2.0/essentials.html#relationships) object to `Graph.create()`. Finally, the tags are split on commas and lowercased. For each of these tags, a relationship `(:Tag)-[:TAGGED]->(:Post)` is created. We use the `Graph.merge_one()` method to ensure we are finding or creating a `Tag` node with the given `name` property.

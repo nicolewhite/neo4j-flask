@@ -28,16 +28,6 @@ blog/
 
 Recall that we created `requirements.txt` in the previous step. Typically, the bulk of the action will take place in `models.py` (where we'll define classes, methods, etc.) and `views.py` (where we'll define our 'views', or site pages). The `__init__.py` file in the `blog/` directory allows it to be used as a [package](https://exploreflask.com/organizing.html#package).
 
-According to the linked documentation, `__init__.py` within the `blog` directory should be used to "initialize your application and bring together all of the various components." My `__init__.py` thus looks like this:
-
-```python
-from flask import Flask
-
-app = Flask(__name__)
-
-import views
-```
-
 `run.py` is "the file that is invoked to start up a development server. It gets a copy of the app from your package and runs it. This won’t be used in production, but it will see a lot of mileage in development." My `run.py` file looks like this:
 
 ```python
