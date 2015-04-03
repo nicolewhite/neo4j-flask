@@ -9,8 +9,8 @@ A microblog application written in Python powered by Flask and Neo4j. Extension 
 
 Make sure [Neo4j](http://neo4j.com/download/) is running first!
 
-*If you're on Neo4j >= 2.2, make sure to set environment variables `NEO4J_USERNAME` and `NEO4J_PASSWORD`
-to your username and password, respectively:*
+**If you're on Neo4j >= 2.2, make sure to set environment variables `NEO4J_USERNAME` and `NEO4J_PASSWORD`
+to your username and password, respectively:**
 
 ```
 export NEO4J_USERNAME=username
