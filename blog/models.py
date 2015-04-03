@@ -1,11 +1,17 @@
-from py2neo import Graph, Node, Relationship
+from py2neo import Graph, Node, Relationship, authenticate
 from passlib.hash import bcrypt
 from datetime import datetime
 import os
 import uuid
 
-graph = Graph(os.environ.get('GRAPHENEDB_URL', 'http://localhost:7474') + '/db/data/')
+url = os.environ.get('NEO4J_URL', 'http://localhost:7474')
+username = os.environ.get('NEO4J_USERNAME')
+password = os.environ.get('NEO4J_PASSWORD')
 
+if username and password:
+    authenticate(url.strip('http://'), username, password)
+
+graph = Graph(url + '/db/data/')
 
 class User:
     def __init__(self, username):
@@ -113,7 +119,6 @@ def get_users_recent_posts(username):
     posts = graph.cypher.execute(query, username=username)
     return posts
 
-
 def get_todays_recent_posts():
     query = """
     MATCH (post:Post {date: {today}}),
@@ -133,13 +138,11 @@ def get_todays_recent_posts():
     posts = graph.cypher.execute(query, today = date())
     return posts
 
-
 def timestamp():
     epoch = datetime.utcfromtimestamp(0)
     now = datetime.now()
     delta = now - epoch
     return delta.total_seconds()
-
 
 def date():
     return datetime.now().strftime('%F')
