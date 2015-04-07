@@ -59,11 +59,11 @@ def add_post():
     tags = request.form['tags']
     text = request.form['text']
 
-    if title == '':
+    if not title:
         abort(400, 'You must give your post a title.')
-    if tags == '':
+    if not tags:
         abort(400, 'You must give your post at least one tag.')
-    if text == '':
+    if not text:
         abort(400, 'You must give your post a texy body.')
 
     user.add_post(title, tags, text)
