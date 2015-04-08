@@ -76,8 +76,7 @@ class User:
         RETURN they.username AS similar_user, tags
         """
 
-        similar = graph.cypher.execute(query, username=self.username)
-        return similar
+        return graph.cypher.execute(query, username=self.username)
 
     def get_commonality_of_user(self, username):
         # Find how many of the logged-in user's posts the other user
@@ -91,15 +90,7 @@ class User:
         RETURN COUNT(DISTINCT post) AS likes, COLLECT(DISTINCT tag.name) AS tags
         """
 
-        result = graph.cypher.execute(query,
-                                      they=username,
-                                      you=self.username)
-
-        result = result[0]
-        common = dict()
-        common['likes'] = result.likes
-        common['tags'] = result.tags if len(result.tags) > 0 else None
-        return common
+        return graph.cypher.execute(query, they=username, you=self.username)[0]
 
 
 def get_users_recent_posts(username):
@@ -116,8 +107,7 @@ def get_users_recent_posts(username):
     LIMIT 5
     """
 
-    posts = graph.cypher.execute(query, username=username)
-    return posts
+    return graph.cypher.execute(query, username=username)
 
 def get_todays_recent_posts():
     query = """
@@ -135,8 +125,7 @@ def get_todays_recent_posts():
     LIMIT 5
     """
 
-    posts = graph.cypher.execute(query, today = date())
-    return posts
+    return graph.cypher.execute(query, today=date())
 
 def timestamp():
     epoch = datetime.utcfromtimestamp(0)
