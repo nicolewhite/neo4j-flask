@@ -12,7 +12,7 @@
     <a href="{{ url_for('register') }}">Register</a>
     <a href="{{ url_for('login') }}">Login</a>
   {% else %}
-    <a href="{{ url_for('profile', username=session.username) }}">Profile</a>
+    <a href="{{ url_for('profile', profile_username=session.username) }}">Profile</a>
     <a href="{{ url_for('logout') }}">Logout</a>
   {% endif %}
   </div>
