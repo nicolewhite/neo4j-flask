@@ -54,7 +54,7 @@ class User:
         graph.create(rel)
 
         tags = [x.strip() for x in tags.lower().split(',')]
-        for t in tags:
+        for t in set(tags):
             tag = graph.merge_one("Tag", "name", t)
             rel = Relationship(tag, "TAGGED", post)
             graph.create(rel)
