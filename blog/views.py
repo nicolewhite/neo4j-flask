@@ -12,6 +12,7 @@ def index():
 @app.route('/register', methods=['GET','POST'])
 def register():
     error = None
+
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
@@ -23,24 +24,24 @@ def register():
         elif not User(username).register(password):
             error = 'A user with that username already exists.'
         else:
-            flash('Successfully registered. Please login.')
-            return redirect(url_for('login'))
+            session['username'] = username
+            flash('Logged in.')
+            return redirect(url_for('index'))
 
     return render_template('register.html', error=error)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     error = None
+
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
 
-        user = User(username)
-
-        if not user.verify_password(password):
+        if not User(username).verify_password(password):
             error = 'Invalid login.'
         else:
-            session['username'] = user.username
+            session['username'] = username
             flash('Logged in.')
             return redirect(url_for('index'))
 
@@ -54,7 +55,6 @@ def logout():
 
 @app.route('/add_post', methods=['POST'])
 def add_post():
-    user = User(session['username'])
     title = request.form['title']
     tags = request.form['tags']
     text = request.form['text']
@@ -66,17 +66,19 @@ def add_post():
     if not text:
         abort(400, 'You must give your post a texy body.')
 
-    user.add_post(title, tags, text)
+    User(session['username']).add_post(title, tags, text)
+
     return redirect(url_for('index'))
 
 @app.route('/like_post/<post_id>')
 def like_post(post_id):
     username = session.get('username')
+
     if not username:
         abort(400, 'You must be logged in to like a post.')
 
-    user = User(username)
-    user.like_post(post_id)
+    User(username).like_post(post_id)
+
     flash('Liked post.')
     return redirect(request.referrer)
 
@@ -91,6 +93,7 @@ def profile(username):
 
     if viewer_username:
         viewer = User(viewer_username)
+
         if viewer.username == username:
             similar = viewer.get_similar_users()
         else:
