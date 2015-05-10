@@ -3,7 +3,7 @@
     <li>
     	<b>{{ post.title }}</b>
         {% if request.path == '/' %}
-    	by <a href="{{ url_for('profile', profile_username=post.username) }}">{{ post.username }}</a>
+    	by <a href="{{ url_for('profile', username=post.username) }}">{{ post.username }}</a>
         {% endif %}
     	on {{ post.date }}
     	<a href="{{ url_for('like_post', post_id=post.id) }}">like</a><br>

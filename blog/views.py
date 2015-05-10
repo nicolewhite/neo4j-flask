@@ -80,24 +80,25 @@ def like_post(post_id):
     flash('Liked post.')
     return redirect(request.referrer)
 
-@app.route('/profile/<profile_username>')
-def profile(profile_username):
-    posts = get_users_recent_posts(profile_username)
+@app.route('/profile/<username>')
+def profile(username):
+    posts = get_users_recent_posts(username)
 
     similar = []
     common = []
 
     viewer_username = session.get('username')
+
     if viewer_username:
         viewer = User(viewer_username)
-        if viewer.username == profile_username:
+        if viewer.username == username:
             similar = viewer.get_similar_users()
         else:
-            common = viewer.get_commonality_of_user(profile_username)
+            common = viewer.get_commonality_of_user(username)
 
     return render_template(
         'profile.html',
-        username=profile_username,
+        username=username,
         posts=posts,
         similar=similar,
         common=common

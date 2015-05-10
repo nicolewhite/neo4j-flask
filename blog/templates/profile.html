@@ -9,7 +9,7 @@
 
           {% for user in similar %}
             <p>
-            <a href="{{ url_for('profile', profile_username=user.similar_user) }}">{{ user.similar_user }}</a>
+            <a href="{{ url_for('profile', username=user.similar_user) }}">{{ user.similar_user }}</a>
             also blogs about <i>{{ ', '.join(user.tags) }}</i>
             </p>
           {% else %}
