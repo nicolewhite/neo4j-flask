@@ -46,7 +46,7 @@ def login():
 
     return render_template('login.html', error=error)
 
-@app.route('/logout', methods=['GET'])
+@app.route('/logout')
 def logout():
     session.pop('username', None)
     flash('Logged out.')
@@ -69,7 +69,7 @@ def add_post():
     user.add_post(title, tags, text)
     return redirect(url_for('index'))
 
-@app.route('/like_post/<post_id>', methods=['GET'])
+@app.route('/like_post/<post_id>')
 def like_post(post_id):
     username = session.get('username')
     if not username:
@@ -80,7 +80,7 @@ def like_post(post_id):
     flash('Liked post.')
     return redirect(request.referrer)
 
-@app.route('/profile/<profile_username>', methods=['GET'])
+@app.route('/profile/<profile_username>')
 def profile(profile_username):
     posts = get_users_recent_posts(profile_username)
 
