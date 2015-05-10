@@ -20,7 +20,7 @@ def register():
             error = 'Your username must be at least one character.'
         elif len(password) < 5:
             error = 'Your password must be at least 5 characters.'
-        elif not User(username).set_password(password).register():
+        elif not User(username).register(password):
             error = 'A user with that username already exists.'
         else:
             flash('Successfully registered. Please login.')

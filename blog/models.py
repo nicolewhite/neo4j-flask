@@ -21,13 +21,9 @@ class User:
         user = graph.find_one("User", "username", self.username)
         return user
 
-    def set_password(self, password):
-        self.password = bcrypt.encrypt(password)
-        return self
-
-    def register(self):
+    def register(self, password):
         if not self.find():
-            user = Node("User", username=self.username, password=self.password)
+            user = Node("User", username=self.username, password=bcrypt.encrypt(password))
             graph.create(user)
             return True
         else:
