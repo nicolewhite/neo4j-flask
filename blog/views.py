@@ -64,7 +64,7 @@ def add_post():
     if not tags:
         abort(400, 'You must give your post at least one tag.')
     if not text:
-        abort(400, 'You must give your post a texy body.')
+        abort(400, 'You must give your post a text body.')
 
     User(session['username']).add_post(title, tags, text)
 
