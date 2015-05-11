@@ -10,12 +10,22 @@ To store information about our users and their acitivites on or our social blogg
 
 <img width="100%" height="100%" src="http://i.imgur.com/9Nuvbpz.png">
 
-Before beginning, we'll want to create some uniqueness constraints (which will also create indexes). We don't want any duplicate users, posts, or tags, so run the following in the Neo4j Browser or shell:
+Before beginning, we'll want to create uniqueness constraints (which will also create indexes). We don't want any duplicate users, posts, or tags, so `indexes.py` contains the following and is included in `__init__.py` so that it is run when the app is started:
 
-```
-CREATE CONSTRAINT ON (u:User) ASSERT u.username IS UNIQUE;
-CREATE CONSTRAINT ON (p:Post) ASSERT p.id IS UNIQUE;
-CREATE CONSTRAINT ON (t:Tag) ASSERT t.name IS UNIQUE;
+```python
+from .models import graph
+
+nodes = [
+    ('User', 'username'),
+    ('Post', 'id'),
+    ('Tag', 'name')
+]
+
+for label, property in nodes:
+    try:
+        graph.schema.create_uniqueness_constraint(label, property)
+    except:
+        continue
 ```
 
 Next, we'll go through each view defined in `views.py` and discuss the corresponding logic in `models.py`.

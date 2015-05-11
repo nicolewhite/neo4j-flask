@@ -34,7 +34,7 @@ app.run(host='0.0.0.0', port=port)
 This will get the `PORT` environment variable from your Heroku configuration for port assignment. Note that `debug=True` is gone. You don't want to expose your stacktrace in production. Next, change the following in `models.py`...
 
 ```python
-url = os.environ.get('NEO4J_URL', 'http://localhost:7474')
+url = 'http://localhost:7474'
 ```
 
 ...to:

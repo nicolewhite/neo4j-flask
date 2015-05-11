@@ -9,14 +9,15 @@ index: 9
 On both the home page (the `/` view) and a user's profile page (the `/profile/<username>` view), a series of posts is displayed accompanied with a link beside each post to 'like' the post. Clicking this link sends a `GET` request to the `/like_post/<post_id>` view, which is defined as:
 
 ```python
-@app.route('/like_post/<post_id>', methods=['GET'])
+@app.route('/like_post/<post_id>')
 def like_post(post_id):
     username = session.get('username')
+
     if not username:
         abort(400, 'You must be logged in to like a post.')
 
-    user = User(username)
-    user.like_post(post_id)
+    User(username).like_post(post_id)
+
     flash('Liked post.')
     return redirect(request.referrer)
 ```

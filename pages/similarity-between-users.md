@@ -9,7 +9,7 @@ index: 10
 When a user visits their own profile, we want to recommend other users whose posts the logged-in user might enjoy reading. To do so, we'll write a Cypher query that finds users most similar to the logged-in user based on the number of tags they've mutually posted about. On the other hand, when the logged-in user visits another user's profile, we want to display what the two users have in common. For this, we'll write a Cypher query that finds how many of the logged-in user's posts the other user has liked, along with which tags they've mutually posted about. The `/profile/<username>` view is defined in `views.py`:
 
 ```python
-@app.route('/profile/<username>', methods=['GET'])
+@app.route('/profile/<username>')
 def profile(username):
     posts = get_users_recent_posts(username)
 
@@ -17,13 +17,12 @@ def profile(username):
     common = []
 
     viewer_username = session.get('username')
+
     if viewer_username:
         viewer = User(viewer_username)
-        # If they're visiting their own profile, show similar users.
+
         if viewer.username == username:
             similar = viewer.get_similar_users()
-        # If they're visiting another user's profile, show what they
-        # have in common with that user.
         else:
             common = viewer.get_commonality_of_user(username)
 
@@ -50,15 +49,12 @@ class User:
         MATCH (you:User)-[:PUBLISHED]->(:Post)<-[:TAGGED]-(tag:Tag),
               (they:User)-[:PUBLISHED]->(:Post)<-[:TAGGED]-(tag)
         WHERE you.username = {username} AND you <> they
-        WITH they, 
-             COLLECT(DISTINCT tag.name) AS tags, 
-             COUNT(DISTINCT tag) AS len
+        WITH they, COLLECT(DISTINCT tag.name) AS tags, COUNT(DISTINCT tag) AS len
         ORDER BY len DESC LIMIT 3
         RETURN they.username AS similar_user, tags
         """
 
-        similar = graph.cypher.execute(query, username=self.username)
-        return similar
+        return graph.cypher.execute(query, username=self.username)
 
     def get_commonality_of_user(self, username):
         # Find how many of the logged-in user's posts the other user
@@ -69,19 +65,10 @@ class User:
         OPTIONAL MATCH (they)-[:LIKED]->(post:Post)<-[:PUBLISHED]-(you)
         OPTIONAL MATCH (they)-[:PUBLISHED]->(:Post)<-[:TAGGED]-(tag:Tag),
                        (you)-[:PUBLISHED]->(:Post)<-[:TAGGED]-(tag)
-        RETURN COUNT(DISTINCT post) AS likes, 
-               COLLECT(DISTINCT tag.name) AS tags
+        RETURN COUNT(DISTINCT post) AS likes, COLLECT(DISTINCT tag.name) AS tags
         """
 
-        result = graph.cypher.execute(query,
-                                      they=username,
-                                      you=self.username)
-
-        result = result[0]
-        common = dict()
-        common['likes'] = result.likes
-        common['tags'] = result.tags if len(result.tags) > 0 else None
-        return common
+        return graph.cypher.execute(query, they=username, you=self.username)[0]
 ```
 
 Both `common` and `similar` are passed to the `profile.html` template, which displays whichever is appropriate (`similar` is diplayed if the user is viewing their own profile, and `common` is displayed if they're visiting someone else's profile):

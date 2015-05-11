@@ -6,28 +6,28 @@ index: 7
 
 # Add a Post
 
-Once a user has successfully logged in, they're redirected to the `/` view, the home page. When `session.username` is not `None`, a form is displayed that allows the user to share a post. This form sends a `POST` request with the title, text, and tags of the post to the `/add_post/<username>` view, where `<username>` is replaced with the logged-in-user's username. In `views.py`, this view is defined by the following:
+Once a user has successfully logged in or registered, they're redirected to the `/` view, the home page. When `session.username` is not `None`, a form is displayed that allows the user to share a post. This form sends a `POST` request with the title, text, and tags of the post to the `/add_post/<username>` view, where `<username>` is replaced with the logged-in-user's username. In `views.py`, this view is defined by the following:
 
 ```python
 @app.route('/add_post', methods=['POST'])
 def add_post():
-    user = User(session['username'])
     title = request.form['title']
     tags = request.form['tags']
     text = request.form['text']
 
-    if title == '':
+    if not title:
         abort(400, 'You must give your post a title.')
-    if tags == '':
+    if not tags:
         abort(400, 'You must give your post at least one tag.')
-    if text == '':
-        abort(400, 'You must give your post a texy body.')
+    if not text:
+        abort(400, 'You must give your post a text body.')
 
-    user.add_post(title, tags, text)
+    User(session['username']).add_post(title, tags, text)
+
     return redirect(url_for('index'))
 ```
 
-First, a `User` object is initialized with the logged-in-user's username. Then, the title, text, and tags that were sent with the `POST` request are accessed and checked to make sure they aren't empty. If it all checks out, the `User.add_post()` method is called with `title`, `text`, and `tags` as arguments. The `add_post()` method is defined in the `User` class like so:
+The title, text, and tags that were sent with the `POST` request are accessed and checked to make sure they aren't empty. If it all checks out, the `User.add_post()` method is called with `title`, `text`, and `tags` as arguments. The `add_post()` method is defined in the `User` class like so:
 
 ```python
 class User:
@@ -50,7 +50,7 @@ class User:
         graph.create(rel)
 
         tags = [x.strip() for x in tags.lower().split(',')]
-        for t in tags:
+        for t in set(tags):
             tag = graph.merge_one("Tag", "name", t)
             rel = Relationship(tag, "TAGGED", post)
             graph.create(rel)
