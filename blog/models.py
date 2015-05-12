@@ -91,8 +91,9 @@ class User:
 
 def get_users_recent_posts(username):
     query = """
-    MATCH (:User {username:{username}})-[:PUBLISHED]->(post:Post),
+    MATCH (user:User)-[:PUBLISHED]->(post:Post),
           (tag:Tag)-[:TAGGED]->(post)
+    WHERE user.username = {username}
     RETURN post.id AS id,
            post.date AS date,
            post.timestamp AS timestamp,
