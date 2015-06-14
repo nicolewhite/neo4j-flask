@@ -9,8 +9,8 @@ Make sure [Neo4j](http://neo4j.com/download/other-releases/) is running first!
 to your username and password, respectively:**
 
 ```
-export NEO4J_USERNAME=username
-export NEO4J_PASSWORD=password
+$ export NEO4J_USERNAME=username
+$ export NEO4J_PASSWORD=password
 ```
 
 Or, set `dbms.security.auth_enabled=false` in `conf/neo4j-server.properties`.
