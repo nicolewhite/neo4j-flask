@@ -45,4 +45,13 @@ Setting the app's `secret_key` allows you to use sessions, which will be explain
 
 The `blog/static` directory contains all CSS, JavaScript, and images, and the `blog/templates` directory contains all your Jinja2 templates.
 
+Note that if you're on Neo4j 2.2 and above, you'll need to set environment variables `NEO4J_USERNAME` and `NEO4J_PASSWORD` to your username and password, respectively:
+
+```
+$ export NEO4J_USERNAME=username
+$ export NEO4J_PASSWORD=password
+```
+
+Or, set `dbms.security.auth_enabled=false` in `conf/neo4j-server.properties`.
+
 <p align="right"><a href="{{ site.baseurl }}/pages/the-data-model.html">Next: The Data Model</a></p>
