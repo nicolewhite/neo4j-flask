@@ -75,7 +75,8 @@ def like_post(post_id):
     username = session.get('username')
 
     if not username:
-        abort(400, 'You must be logged in to like a post.')
+        error = 'You must be logged in to like a post.'
+        return render_template('login.html', error=error)
 
     User(username).like_post(post_id)
 
