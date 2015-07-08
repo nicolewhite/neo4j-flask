@@ -6,44 +6,34 @@ index: 8
 
 # Display Posts
 
-On both the home page (the `/` view) and a user's profile page (the `/profile/<username>` view), a series of posts is displayed. On the home page, the five most recent posts by all users are displayed; on a user's profile, the five most recent posts by that user are displayed. The following functions in `models.py` retrieve these posts:
+On both the home page (the `/` view) and a user's profile page (the `/profile/<username>` view), a series of posts is displayed. On the home page, the five most recent posts by all users are displayed; on a user's profile, the five most recent posts by that user are displayed. The function `get_todays_recent_posts` gets today's most recent posts and the method `User.get_recent_posts` gets a user's most recent posts.
 
 ```python
 def get_todays_recent_posts():
     query = """
-    MATCH (post:Post {date: {today}}),
-          (user:User)-[:PUBLISHED]->(post),
-          (tag:Tag)-[:TAGGED]->(post)
-    RETURN user.username AS username,
-           post.id AS id,
-           post.date AS date,
-           post.timestamp AS timestamp,
-           post.title AS title,
-           post.text AS text,
-           COLLECT(tag.name) AS tags
-    ORDER BY timestamp DESC
-    LIMIT 5
+    MATCH (user:User)-[:PUBLISHED]->(post:Post)<-[:TAGGED]-(tag:Tag)
+    WHERE post.date = {today}
+    RETURN user.username AS username, post, COLLECT(tag.name) AS tags
+    ORDER BY post.timestamp DESC LIMIT 5
     """
 
-    posts = graph.cypher.execute(query, today = date())
-    return posts
+    return graph.cypher.execute(query, today=date())
+```
 
-def get_users_recent_posts(username):
+```python
+class User:
+
+  ...
+
+  def get_recent_posts(self):
     query = """
-    MATCH (:User {username:{username}})-[:PUBLISHED]->(post:Post),
-          (tag:Tag)-[:TAGGED]->(post)
-    RETURN post.id AS id,
-           post.date AS date,
-           post.timestamp AS timestamp,
-           post.title AS title,
-           post.text AS text,
-           COLLECT(tag.name) AS tags
-    ORDER BY timestamp DESC
-    LIMIT 5
+    MATCH (user:User)-[:PUBLISHED]->(post:Post)<-[:TAGGED]-(tag:Tag)
+    WHERE user.username = {username}
+    RETURN post, COLLECT(tag.name) AS tags
+    ORDER BY post.timestamp DESC LIMIT 5
     """
 
-    posts = graph.cypher.execute(query, username=username)
-    return posts
+    return graph.cypher.execute(query, username=self.username)
 ```
 
 The results of [`Graph.cypher.execute()`](http://py2neo.org/2.0/cypher.html#py2neo.cypher.CypherResource.execute) is a [`RecordList`](http://py2neo.org/2.0/cypher.html#py2neo.cypher.RecordList), of which each element is a [`Record`](http://py2neo.org/2.0/cypher.html#py2neo.cypher.Record). The elements of the `Record` can be accessed by attribute or key.
@@ -60,17 +50,17 @@ In the templates of `index.html` (shown in the previous section) and `profile.ht
 
 {% raw %}
 ```html
-<ul class=posts>
-{% for post in posts %}
+<ul class="posts">
+{% for row in posts %}
   <li>
-    <b>{{ post.title }}</b>
-      {% if request.path == '/' %}
-    by <a href="{{ url_for('profile', username=post.username) }}">{{ post.username }}</a>
+    <b>{{ row.post.title }}</b>
+      {% if request.path == "/" %}
+    by <a href="{{ url_for('profile', username=row.username) }}">{{ row.username }}</a>
       {% endif %}
-    on {{ post.date }}
-    <a href="{{ url_for('like_post', post_id=post.id) }}">like</a><br>
-    <i>{{ ', '.join(post.tags) }}</i><br>
-    {{ post.text }}
+    on {{ row.post.date }}
+    <a href="{{ url_for('like_post', post_id=row.post.id) }}">like</a><br>
+    <i>{{ ", ".join(row.tags) }}</i><br>
+    {{ row.post.text }}
 {% else %}
   <li>There aren't any posts yet!
 {% endfor %}
@@ -78,9 +68,9 @@ In the templates of `index.html` (shown in the previous section) and `profile.ht
 ```
 {% endraw %}
 
-Notice that we check that we're on the home page with `if request.path == '/'`. If we're on the home page, we display the username of the user who published the post since the home page will display posts from multiple users. Otherwise, if we're on a user's profile page, we omit this since the profile page only displays posts for one user (the user whose profile you're visiting).
+Notice that we check that we're on the home page with `if request.path == "/"`. If we're on the home page, we display the username of the user who published the post since the home page will display posts from multiple users. Otherwise, if we're on a user's profile page, we omit this since the profile page only displays posts for one user (the user whose profile you're visiting).
 
-When returning a collection in Cypher, e.g. `COLLECT(DISTINCT tag.name) AS tags`, it is returned as a list in Python. A minimal amount of Python code can be used within the templates; above, I use `', '.join(post.tags)` to convert the list to a string where the values are separated by commas.
+When returning a collection in Cypher, e.g. `COLLECT(DISTINCT tag.name) AS tags`, it is returned as a list in Python. A minimal amount of Python code can be used within the templates; above, I use `", ".join(row.tags)` to convert the list to a string where the values are separated by commas.
 
 Finally, notice that a link titled 'like' is next to each post. This allows users to like a post, which is explained in the next section.
 

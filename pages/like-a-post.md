@@ -14,7 +14,8 @@ def like_post(post_id):
     username = session.get('username')
 
     if not username:
-        abort(400, 'You must be logged in to like a post.')
+        flash('You must be logged in to like a post.')
+        return redirect(url_for('login'))
 
     User(username).like_post(post_id)
 
@@ -22,7 +23,7 @@ def like_post(post_id):
     return redirect(request.referrer)
 ```
 
-A `User` object is initialized with the logged-in user's username, and the `User.like_post()` method is called, which is defined within the `User` class in `models.py`:
+If a user who isn't logged-in tries to like a post, they'll be redirected to the login page. Otherwise, a `User` object is initialized with the logged-in user's username, and the `User.like_post()` method is called, which is defined within the `User` class in `models.py`:
 
 ```python
 class User:
@@ -41,21 +42,21 @@ The link that sends the request is defined in the `display_posts.html` template,
 
 {% raw %}
 ```html
-  <ul class=posts>
-  {% for post in posts %}
-    <li>
-    	<b>{{ post.title }}</b>
-        {% if request.path == '/' %}
-    	by <a href="{{ url_for('profile', username=post.username) }}">{{ post.username }}</a>
-        {% endif %}
-    	on {{ post.date }}
-    	<a href="{{ url_for('like_post', post_id=post.id) }}">like</a><br>
-    	<i>{{ ', '.join(post.tags) }}</i><br>
-    	{{ post.text }}
-  {% else %}
-    <li>There aren't any posts yet!
-  {% endfor %}
-  </ul>
+<ul class="posts">
+{% for row in posts %}
+<li>
+    <b>{{ row.post.title }}</b>
+    {% if request.path == "/" %}
+    by <a href="{{ url_for('profile', username=row.username) }}">{{ row.username }}</a>
+    {% endif %}
+    on {{ row.post.date }}
+    <a href="{{ url_for('like_post', post_id=row.post.id) }}">like</a><br>
+    <i>{{ ", ".join(row.tags) }}</i><br>
+    {{ row.post.text }}
+{% else %}
+<li>There aren't any posts yet!
+{% endfor %}
+</ul>
 ```
 {% endraw %}
 

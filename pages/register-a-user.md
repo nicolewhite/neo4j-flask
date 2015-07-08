@@ -11,51 +11,40 @@ Before any content can be created on our blog, users will need to be able to sig
 The registration page is located at `/register` and will accept both `GET` and `POST` requests. A `GET` request will be sent when a visitor lands on the page, and a `POST` request will be sent when they fill out the registration form. In `views.py`, the `/register` view is defined by the following:
 
 ```python
-from models import User, get_users_recent_posts, get_todays_recent_posts
-from flask import Flask, request, session, redirect, url_for, \
-    abort, render_template, flash
+from models import User, get_todays_recent_posts
+from flask import Flask, request, session, redirect, url_for, render_template, flash
 
 app = Flask(__name__)
 
 @app.route('/register', methods=['GET','POST'])
 def register():
-    error = None
-
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
 
         if len(username) < 1:
-            error = 'Your username must be at least one character.'
+            flash('Your username must be at least one character.')
         elif len(password) < 5:
-            error = 'Your password must be at least 5 characters.'
+            flash('Your password must be at least 5 characters.')
         elif not User(username).register(password):
-            error = 'A user with that username already exists.'
+            flash('A user with that username already exists.')
         else:
             session['username'] = username
             flash('Logged in.')
             return redirect(url_for('index'))
 
-    return render_template('register.html', error=error)
+    return render_template('register.html')
 ```
 
 The `request` variable is a Flask object that parses the incoming request, allowing you to access the request's data. For example, the method of the request (either `GET` or `POST` or whatever is allowed) is stored on `request.method`. As I said before, when a user lands on the page a `GET` request is sent. When a user fills out the registration form, a `POST` request is sent. This view checks the method type, and if it is a `GET` request it simply returns the template `register.html` with Flask's [`render_template()`](http://flask.pocoo.org/docs/0.10/api/#flask.render_template), which looks into the `blog/templates` directory for templates and passes any necessary context (in this case, an error message). However, if it is a `POST` request, the `username` and `password` are parsed from the request and a user is created if their inputs meet all of the criteria. To understand this better, we'll have to look at part of the `User` class that was defined in `models.py`. 
 
 ```python
-from py2neo import Graph, Node, Relationship, authenticate
+from py2neo import Graph, Node, Relationship
 from passlib.hash import bcrypt
 from datetime import datetime
-import os
 import uuid
 
-url = 'http://localhost:7474'
-username = os.environ.get('NEO4J_USERNAME')
-password = os.environ.get('NEO4J_PASSWORD')
-
-if username and password:
-    authenticate(url.strip('http://'), username, password)
-
-graph = Graph(url + '/db/data/')
+graph = Graph()
 
 class User:
     def __init__(self, username):
@@ -83,17 +72,15 @@ Finally, to fully understand the registration procedure we should take a look at
 {% extends "layout.html" %}
 {% block body %}
   <h2>Register</h2>
-  {% if error %}
-  <p class=error><strong>Error:</strong> {{ error }}
-  {% endif %}
-	<form action="{{ url_for('register') }}" method=post>
-		Username:<br>
-		<input type="text" name="username">
-		<br>
-		Password:<br>
-		<input type="password" name="password">
-		<input type="submit" value="Register">
-	</form>
+    <form action="{{ url_for('register') }}" method="post">
+        <dl>
+            <dt>Username:</dt>
+            <dd><input type="text" name="username"></dd>
+            <dt>Password:</dt>
+            <dd><input type="password" name="password"></dd>
+        </dl>
+        <input type="submit" value="Register">
+    </form>
 {% endblock %}
 ```
 {% endraw %}

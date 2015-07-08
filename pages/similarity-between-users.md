@@ -11,20 +11,22 @@ When a user visits their own profile, we want to recommend other users whose pos
 ```python
 @app.route('/profile/<username>')
 def profile(username):
-    posts = get_users_recent_posts(username)
+    logged_in_username = session.get('username')
+    user_being_viewed_username = username
+
+    user_being_viewed = User(user_being_viewed_username)
+    posts = user_being_viewed.get_recent_posts()
 
     similar = []
     common = []
 
-    viewer_username = session.get('username')
+    if logged_in_username:
+        logged_in_user = User(logged_in_username)
 
-    if viewer_username:
-        viewer = User(viewer_username)
-
-        if viewer.username == username:
-            similar = viewer.get_similar_users()
+        if logged_in_user.username == user_being_viewed.username:
+            similar = logged_in_user.get_similar_users()
         else:
-            common = viewer.get_commonality_of_user(username)
+            common = logged_in_user.get_commonality_of_user(user_being_viewed)
 
     return render_template(
         'profile.html',
@@ -56,22 +58,22 @@ class User:
 
         return graph.cypher.execute(query, username=self.username)
 
-    def get_commonality_of_user(self, username):
+    def get_commonality_of_user(self, other):
         # Find how many of the logged-in user's posts the other user
         # has liked and which tags they've both blogged about.
         query = """
-        MATCH (they:User {username:{they}}),
-              (you:User {username:{you}})
+        MATCH (they:User {username: {they} })
+        MATCH (you:User {username: {you} })
         OPTIONAL MATCH (they)-[:LIKED]->(post:Post)<-[:PUBLISHED]-(you)
         OPTIONAL MATCH (they)-[:PUBLISHED]->(:Post)<-[:TAGGED]-(tag:Tag),
                        (you)-[:PUBLISHED]->(:Post)<-[:TAGGED]-(tag)
         RETURN COUNT(DISTINCT post) AS likes, COLLECT(DISTINCT tag.name) AS tags
         """
 
-        return graph.cypher.execute(query, they=username, you=self.username)[0]
+        return graph.cypher.execute(query, they=other.username, you=self.username)[0]
 ```
 
-Both `common` and `similar` are passed to the `profile.html` template, which displays whichever is appropriate (`similar` is diplayed if the user is viewing their own profile, and `common` is displayed if they're visiting someone else's profile):
+Both `common` and `similar` are passed to the `profile.html` template, which displays whichever is appropriate. `similar` is diplayed if the user is viewing their own profile, and `common` is displayed if they're visiting someone else's profile:
 
 {% raw %}
 ```html
@@ -80,14 +82,14 @@ Both `common` and `similar` are passed to the `profile.html` template, which dis
 
 <h2>{{ username }}'s profile</h2>
 
-{% if session.logged_in %}
+{% if session.username %}
     {% if session.username == username %}
         <h3>Users similar to you:</h3>
 
           {% for user in similar %}
             <p>
             <a href="{{ url_for('profile', username=user.similar_user) }}">{{ user.similar_user }}</a>
-            also blogs about <i>{{ ', '.join(user.tags) }}</i>
+            also blogs about <i>{{ ", ".join(user.tags) }}</i>
             </p>
           {% else %}
             <p>There aren't any users who've blogged about the same tags as you!</p>
@@ -99,7 +101,7 @@ Both `common` and `similar` are passed to the `profile.html` template, which dis
 
   <p>{{ username }} has liked {{ common.likes }} of your posts and
       {% if common.tags %}
-      also blogs about <i>{{ ', '.join(common.tags) }}</i>
+      also blogs about <i>{{ ", ".join(common.tags) }}</i>
       {% else %}
       hasn't blogged about any of the same tags
       {% endif %}
@@ -115,7 +117,5 @@ Both `common` and `similar` are passed to the `profile.html` template, which dis
 {% endblock %}
 ```
 {% endraw %}
-
-If a user is visiting their own profile, similar users are displayed with links to their profiles.
 
 <p align="right"><a href="{{ site.baseurl }}/pages/logout-a-user.html">Next: Logout a User</a></p>

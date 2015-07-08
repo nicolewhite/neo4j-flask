@@ -15,14 +15,15 @@ def add_post():
     tags = request.form['tags']
     text = request.form['text']
 
-    if not title:
-        abort(400, 'You must give your post a title.')
-    if not tags:
-        abort(400, 'You must give your post at least one tag.')
-    if not text:
-        abort(400, 'You must give your post a text body.')
-
-    User(session['username']).add_post(title, tags, text)
+    if not title or not tags or not text:
+        if not title:
+            flash('You must give your post a title.')
+        if not tags:
+            flash('You must give your post at least one tag.')
+        if not text:
+            flash('You must give your post a text body.')
+    else:
+        User(session['username']).add_post(title, tags, text)
 
     return redirect(url_for('index'))
 ```
@@ -35,8 +36,6 @@ class User:
 	...
 
     def add_post(self, title, tags, text):
-        import uuid
-
         user = self.find()
         post = Node(
             "Post",
@@ -66,7 +65,7 @@ def timestamp():
     return delta.total_seconds()
 
 def date():
-    return datetime.now().strftime('%F')
+    return datetime.now().strftime('%Y-%m-%d')
 ```
 
 With both the `user` and `post` variables, we can create a `(:User)-[:PUBLISHED]->(:Post)` relationship in the graph by passing a [`py2neo.Relationship`](http://py2neo.org/2.0/essentials.html#relationships) object to `Graph.create()`. Finally, the tags are split on commas and lowercased. For each of these tags, a relationship `(:Tag)-[:TAGGED]->(:Post)` is created. We use the `Graph.merge_one()` method to ensure we are finding or creating a `Tag` node with the given `name` property.
@@ -81,16 +80,16 @@ The form where a user adds a new post is located in `index.html`:
 <h2>Home</h2>
   {% if session.username %}
     <h3>Share New Post</h3>
-    <form action="{{ url_for('add_post') }}" method=post>
+    <form action="{{ url_for('add_post') }}" method="post">
         <dl>
             <dt>Title:</dt>
-            <dd><input type=text size=30 name=title></dd>
+            <dd><input type="text" size="30" name="title"></dd>
             <dt>Tags (separated by commas):</dt>
-            <dd><input type=text size=30 name=tags></dd>
+            <dd><input type="text" size="30" name="tags"></dd>
             <dt>Text:</dt>
-            <dd><textarea name=text rows=5 cols=40></textarea></dd>
+            <dd><textarea name="text" rows="5" cols="40"></textarea></dd>
         </dl>
-        <input type=submit value=Share>
+        <input type="submit" value="Share">
     </form>
   {% endif %}
 
