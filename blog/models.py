@@ -60,6 +60,23 @@ class User:
         post = graph.find_one("Post", "id", post_id)
         graph.create_unique(Relationship(user, "LIKED", post))
 
+    def get_recent_posts(self):
+        query = """
+        MATCH (user:User)-[:PUBLISHED]->(post:Post),
+              (tag:Tag)-[:TAGGED]->(post)
+        WHERE user.username = {username}
+        RETURN post.id AS id,
+               post.date AS date,
+               post.timestamp AS timestamp,
+               post.title AS title,
+               post.text AS text,
+               COLLECT(tag.name) AS tags
+        ORDER BY timestamp DESC
+        LIMIT 5
+        """
+
+        return graph.cypher.execute(query, username=self.username)
+
     def get_similar_users(self):
         # Find three users who are most similar to the logged-in user
         # based on tags they've both blogged about.
@@ -74,7 +91,7 @@ class User:
 
         return graph.cypher.execute(query, username=self.username)
 
-    def get_commonality_of_user(self, username):
+    def get_commonality_of_user(self, other):
         # Find how many of the logged-in user's posts the other user
         # has liked and which tags they've both blogged about.
         query = """
@@ -86,25 +103,7 @@ class User:
         RETURN COUNT(DISTINCT post) AS likes, COLLECT(DISTINCT tag.name) AS tags
         """
 
-        return graph.cypher.execute(query, they=username, you=self.username)[0]
-
-
-def get_users_recent_posts(username):
-    query = """
-    MATCH (user:User)-[:PUBLISHED]->(post:Post),
-          (tag:Tag)-[:TAGGED]->(post)
-    WHERE user.username = {username}
-    RETURN post.id AS id,
-           post.date AS date,
-           post.timestamp AS timestamp,
-           post.title AS title,
-           post.text AS text,
-           COLLECT(tag.name) AS tags
-    ORDER BY timestamp DESC
-    LIMIT 5
-    """
-
-    return graph.cypher.execute(query, username=username)
+        return graph.cypher.execute(query, they=other.username, you=self.username)[0]
 
 def get_todays_recent_posts():
     query = """

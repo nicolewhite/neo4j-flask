@@ -1,4 +1,4 @@
-from models import User, get_users_recent_posts, get_todays_recent_posts
+from models import User, get_todays_recent_posts
 from flask import Flask, request, session, redirect, url_for, render_template, flash
 
 app = Flask(__name__)
@@ -81,20 +81,22 @@ def like_post(post_id):
 
 @app.route('/profile/<username>')
 def profile(username):
-    posts = get_users_recent_posts(username)
+    logged_in_username = session.get('username')
+    user_being_viewed_username = username
+
+    user_being_viewed = User(user_being_viewed_username)
+    posts = user_being_viewed.get_recent_posts()
 
     similar = []
     common = []
 
-    viewer_username = session.get('username')
+    if logged_in_username:
+        logged_in_user = User(logged_in_username)
 
-    if viewer_username:
-        viewer = User(viewer_username)
-
-        if viewer.username == username:
-            similar = viewer.get_similar_users()
+        if logged_in_user.username == user_being_viewed.username:
+            similar = logged_in_user.get_similar_users()
         else:
-            common = viewer.get_commonality_of_user(username)
+            common = logged_in_user.get_commonality_of_user(user_being_viewed)
 
     return render_template(
         'profile.html',
