@@ -10,7 +10,7 @@
           {% for user in similar %}
             <p>
             <a href="{{ url_for('profile', username=user.similar_user) }}">{{ user.similar_user }}</a>
-            also blogs about <i>{{ ', '.join(user.tags) }}</i>
+            also blogs about <i>{{ ", ".join(user.tags) }}</i>
             </p>
           {% else %}
             <p>There aren't any users who've blogged about the same tags as you!</p>
@@ -22,7 +22,7 @@
 
   <p>{{ username }} has liked {{ common.likes }} of your posts and
       {% if common.tags %}
-      also blogs about <i>{{ ', '.join(common.tags) }}</i>
+      also blogs about <i>{{ ", ".join(common.tags) }}</i>
       {% else %}
       hasn't blogged about any of the same tags
       {% endif %}

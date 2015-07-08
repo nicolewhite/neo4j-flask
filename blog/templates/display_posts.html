@@ -1,13 +1,13 @@
-  <ul class=posts>
+  <ul class="posts">
   {% for post in posts %}
     <li>
     	<b>{{ post.title }}</b>
-        {% if request.path == '/' %}
+        {% if request.path == "/" %}
     	by <a href="{{ url_for('profile', username=post.username) }}">{{ post.username }}</a>
         {% endif %}
     	on {{ post.date }}
     	<a href="{{ url_for('like_post', post_id=post.id) }}">like</a><br>
-    	<i>{{ ', '.join(post.tags) }}</i><br>
+    	<i>{{ ", ".join(post.tags) }}</i><br>
     	{{ post.text }}
   {% else %}
     <li>There aren't any posts yet!

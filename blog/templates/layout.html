@@ -1,9 +1,9 @@
 <!doctype html>
 <title>My Blogging Site</title>
-<link rel=stylesheet type=text/css href="{{ url_for('static', filename='style.css') }}">
-<div class=page>
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+<div class="page">
   <h1>My Blogging Site</h1>
-  <div class=metanav>
+  <div class="metanav">
   {% if session.username %}
   Logged in as {{ session.username }}
   {% endif %}
@@ -17,7 +17,7 @@
   {% endif %}
   </div>
   {% for message in get_flashed_messages() %}
-    <div class=flash>{{ message }}</div>
+    <div class="flash">{{ message }}</div>
   {% endfor %}
   {% block body %}{% endblock %}
 </div>
