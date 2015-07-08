@@ -62,17 +62,10 @@ class User:
 
     def get_recent_posts(self):
         query = """
-        MATCH (user:User)-[:PUBLISHED]->(post:Post),
-              (tag:Tag)-[:TAGGED]->(post)
+        MATCH (user:User)-[:PUBLISHED]->(post:Post)<-[:TAGGED]-(tag:Tag)
         WHERE user.username = {username}
-        RETURN post.id AS id,
-               post.date AS date,
-               post.timestamp AS timestamp,
-               post.title AS title,
-               post.text AS text,
-               COLLECT(tag.name) AS tags
-        ORDER BY timestamp DESC
-        LIMIT 5
+        RETURN post, COLLECT(tag.name) AS tags
+        ORDER BY post.timestamp DESC LIMIT 5
         """
 
         return graph.cypher.execute(query, username=self.username)
@@ -95,8 +88,8 @@ class User:
         # Find how many of the logged-in user's posts the other user
         # has liked and which tags they've both blogged about.
         query = """
-        MATCH (they:User {username:{they}}),
-              (you:User {username:{you}})
+        MATCH (they:User {username: {they} })
+        MATCH (you:User {username: {you} })
         OPTIONAL MATCH (they)-[:LIKED]->(post:Post)<-[:PUBLISHED]-(you)
         OPTIONAL MATCH (they)-[:PUBLISHED]->(:Post)<-[:TAGGED]-(tag:Tag),
                        (you)-[:PUBLISHED]->(:Post)<-[:TAGGED]-(tag)
@@ -107,18 +100,10 @@ class User:
 
 def get_todays_recent_posts():
     query = """
-    MATCH (post:Post {date: {today}}),
-          (user:User)-[:PUBLISHED]->(post),
-          (tag:Tag)-[:TAGGED]->(post)
-    RETURN user.username AS username,
-           post.id AS id,
-           post.date AS date,
-           post.timestamp AS timestamp,
-           post.title AS title,
-           post.text AS text,
-           COLLECT(tag.name) AS tags
-    ORDER BY timestamp DESC
-    LIMIT 5
+    MATCH (user:User)-[:PUBLISHED]->(post:Post)<-[:TAGGED]-(tag:Tag)
+    WHERE post.date = {today}
+    RETURN user.username AS username, post, COLLECT(tag.name) AS tags
+    ORDER BY post.timestamp DESC LIMIT 5
     """
 
     return graph.cypher.execute(query, today=date())
