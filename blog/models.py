@@ -115,4 +115,4 @@ def timestamp():
     return delta.total_seconds()
 
 def date():
-    return datetime.now().strftime('%F')
+    return datetime.now().strftime('%Y-%m-%d')
