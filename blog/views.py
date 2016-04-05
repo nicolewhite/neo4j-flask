@@ -1,4 +1,4 @@
-from models import User, get_todays_recent_posts
+from .models import User, get_todays_recent_posts
 from flask import Flask, request, session, redirect, url_for, render_template, flash
 
 app = Flask(__name__)
