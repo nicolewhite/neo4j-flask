@@ -8,9 +8,9 @@ index: 4
 
 To store information about our users and their activities on or our social blogging application, let's think about how we'll want to model this data. For this example, we'll have `:User`, `:Post`, and `:Tag` labels for our nodes. Conceptually, we want to capture:
 
-* users publishing posts `(:User)-[:PUBLISHED]->(:Post)`
-* tags tagging posts `(:Tag)-[:TAGGED]->(:Post)`
-* users liking posts `(:User)-[:LIKED]->(:Post)`
+* users publishing posts, or `(:User)-[:PUBLISHED]->(:Post)`
+* tags tagging posts, or `(:Tag)-[:TAGGED]->(:Post)`
+* users liking posts, or `(:User)-[:LIKED]->(:Post)`
 
 <img width="100%" height="100%" src="http://i.imgur.com/9Nuvbpz.png">
 
