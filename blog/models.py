@@ -77,8 +77,8 @@ class User:
         MATCH (you:User)-[:PUBLISHED]->(:Post)<-[:TAGGED]-(tag:Tag),
               (they:User)-[:PUBLISHED]->(:Post)<-[:TAGGED]-(tag)
         WHERE you.username = {username} AND you <> they
-        WITH they, COLLECT(DISTINCT tag.name) AS tags, COUNT(DISTINCT tag) AS len
-        ORDER BY len DESC LIMIT 3
+        WITH they, COLLECT(DISTINCT tag.name) AS tags
+        ORDER BY SIZE(tags) DESC LIMIT 3
         RETURN they.username AS similar_user, tags
         """
 
