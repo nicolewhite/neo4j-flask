@@ -6,7 +6,7 @@ index: 12
 
 # Add Style
 
-The following was stolen (with a couple of modifications) from the [Flask tutorial](http://flask.pocoo.org/docs/0.10/tutorial/css/) that this tutorial is based on. This is the `style.css` file located in `/blog/static`.
+The following was borrowed (with a couple of modifications) from the [Flask tutorial](http://flask.pocoo.org/docs/0.10/tutorial/css/) that this tutorial is based on. This is the `style.css` file located in `/blog/static`.
 
 ```css
 body            { font-family: sans-serif; background: #eee; }

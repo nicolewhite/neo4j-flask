@@ -25,7 +25,7 @@ def login():
     return render_template('login.html')
 ```
 
-The code here should look similar to the `/register` view. There is a similar form to fill out on `login.html`, where a user types in their username and password. With the given username, a `User` object is initialized. The password they filled out in the form is verified with [`bcrypt.verify()`](https://pythonhosted.org/passlib/lib/passlib.hash.bcrypt.html) against the hashed password that was retrieved from the corresponding User node in the database. If the verification is successful it will return `True`, then a `session` object is created and `session['username']` is set to the given username. The `session` object allows us to follow the user through requests with cookies. The user is then directed to the home page, on which they can add their first post. In `models.py`, the `User.verify_password()` method is defined as:
+The code here should look similar to the `/register` view. There is a similar form to fill out on `login.html` where a user types in their username and password. With the given username, a `User` object is initialized. The password they filled out in the form is verified with [`bcrypt.verify()`](https://pythonhosted.org/passlib/lib/passlib.hash.bcrypt.html) against the hashed password that was retrieved from the corresponding `:User` node in the database. If the verification is successful it will return `True`, then a `session` object is created and `session['username']` is set to the given username. The `session` object allows us to follow the user through requests with cookies. The user is then directed to the home page, on which they can add their first post. In `models.py`, the `User.verify_password()` method is defined as:
 
 ```python
 class User:

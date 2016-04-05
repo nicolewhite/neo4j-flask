@@ -6,7 +6,7 @@ index: 14
 
 # Deploy to Heroku
 
-To deploy your application to Heroku, you should first read their [getting started with Python guide](https://devcenter.heroku.com/articles/getting-started-with-python#introduction) so that you are familiar with the deployment process.
+To deploy your application to Heroku, you should first read their [getting started with Python guide](https://devcenter.heroku.com/articles/getting-started-with-python#introduction) so that you are familiar with the deployment process. You'll also need to first push your code to a GitHub repository.
 
 Within the same directory that your application sits, in the terminal, execute `heroku create`. This will create a new git remote called `heroku`. Next, you need to add the [GrapheneDB add-on](https://devcenter.heroku.com/articles/graphenedb), which is an easy way to get set up with a Neo4j database on Heroku.
 
@@ -31,16 +31,12 @@ app.secret_key = os.urandom(24)
 app.run(host='0.0.0.0', port=port)
 ```
 
-This will get the `PORT` environment variable from your Heroku configuration for port assignment. Note that `debug=True` is gone. You don't want to expose your stacktrace in production. Next, change the following in `models.py`...
+This will get the `PORT` environment variable from your Heroku configuration for port assignment. Note that `debug=True` is gone. You don't want to expose your stacktrace in production. Next, change the following in `models.py`:
 
-```python
-url = 'http://localhost:7474'
-```
-
-...to:
 
 ```python
 url = os.environ.get('GRAPHENEDB_URL', 'http://localhost:7474')
+graph = Graph(url + '/db/data/')
 ```
 
 This will get the `GRAPHENEDB_URL` environment variable that is present in your Heroku configuation after adding the GrapheneDB add-on.

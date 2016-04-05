@@ -16,6 +16,6 @@ def logout():
     return redirect(url_for('index'))
 ```
 
-This removes `username` from the session and takes the visitor back to the home page. Once logged out, the visitor won't see any of the similarities shown in the previous section when visiting their own or someone else's profile.
+This removes `username` from the `session` object and takes the visitor back to the home page.
 
 <p align="right"><a href="{{ site.baseurl }}/pages/add-style.html">Next: Add Style</a></p>

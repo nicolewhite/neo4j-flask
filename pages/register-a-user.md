@@ -6,12 +6,12 @@ index: 5
 
 # Register a User
 
-Before any content can be created on our blog, users will need to be able to sign up for an account. When successful, this will create a `User` node in the database with the properties `username` and `password`, where the password is hashed.
+Before any content can be created on our blog, users will need to be able to sign up for an account. When successful, this will create a node in the database with a `:User` label and `username` and `password` properties, where the password is hashed.
 
 The registration page is located at `/register` and will accept both `GET` and `POST` requests. A `GET` request will be sent when a visitor lands on the page, and a `POST` request will be sent when they fill out the registration form. In `views.py`, the `/register` view is defined by the following:
 
 ```python
-from models import User, get_todays_recent_posts
+from .models import User, get_todays_recent_posts
 from flask import Flask, request, session, redirect, url_for, render_template, flash
 
 app = Flask(__name__)
@@ -63,7 +63,7 @@ class User:
             return False
 ```
 
-An object of class `User` is initialized with a `username` argument. The `User.find()` method uses py2neo's [`Graph.find_one()`](http://py2neo.org/2.0/essentials.html#py2neo.Graph.find_one) method to find a node in the database with label User and the given username, returning a [`py2neo.Node`](http://py2neo.org/2.0/essentials.html#nodes) object. Recall that a uniqueness constraint was created for User nodes based on the username property, so there will not be more than one user with the given username. The `User.register()` method checks if a user with that username already exists in the database; if not, then a user is created with the given username and password by passing the `py2neo.Node` object to the [`Graph.create()`](http://py2neo.org/2.0/essentials.html#py2neo.Graph.create) method. `True` is returned to indicate that the registration was successful.
+An object of class `User` is initialized with a `username` argument. The `User.find()` method uses py2neo's [`Graph.find_one()`](http://py2neo.org/2.0/essentials.html#py2neo.Graph.find_one) method to find a node in the database with label `:User` and the given username, returning a [`py2neo.Node`](http://py2neo.org/2.0/essentials.html#nodes) object. Recall that a uniqueness constraint was created for `:User` nodes based on the `username` property, so there will not be more than one user with the given username. The `User.register()` method checks if a user with that username already exists in the database; if not, then a user is created with the given username and password by passing the `py2neo.Node` object to the [`Graph.create()`](http://py2neo.org/2.0/essentials.html#py2neo.Graph.create) method. `True` is returned to indicate that the registration was successful.
 
 Finally, to fully understand the registration procedure we should take a look at the `register.html` template:
 
@@ -85,6 +85,8 @@ Finally, to fully understand the registration procedure we should take a look at
 ```
 {% endraw %}
 
-Recall in `views.py` that the `register()` method defined a variable `error` with a string telling the user what they did wrong. The variables passed along with `render_template()` are called 'context' and are made available in the context of the template. Thus, they can be accessed with the double curly braces in the respective template `.html` file. If `error` is not `None`, then it is displayed to the visitor. The form sends a `POST` request to the `/register` view due to {% raw %}`action="{{ url_for('register') }}"`{% endraw %}, where [`url_for()`](http://flask.pocoo.org/docs/0.10/api/#flask.url_for) is a Flask method for accessing URLs defined in view functions. The form's data is accessed with the input's names; for example, the string that the user types into the `username` text box is accessed with `request.form['username']`.
+Recall in `views.py` that the `register()` method defined a variable `error` with a string telling the user what they did wrong. The variables passed along with `render_template()` are called context and are made available in the context of the template. Thus, they can be accessed with double curly braces in the respective template `.html` file. If `error` is not `None`, then it is displayed to the visitor. The form sends a `POST` request to the `/register` view due to {% raw %}`action="{{ url_for('register') }}"`{% endraw %}, where [`url_for()`](http://flask.pocoo.org/docs/0.10/api/#flask.url_for) is a Flask method for accessing URLs defined in view functions. The argument to `url_for` is a string and refers to the name of the function that handles the view. Because the function that handles the view is named `register` (`def register():`), we pass the string "register" to the `url_for` function. 
+
+The form's data is accessed with the input's name; for example, the string that the user types into the username text box is accessed with `request.form['username']` because the input was defined as `<input type="text" name="username">`.
 
 <p align="right"><a href="{{ site.baseurl }}/pages/login-a-user.html">Next: Login a User</a></p>

@@ -15,13 +15,12 @@ def add_post():
     tags = request.form['tags']
     text = request.form['text']
 
-    if not title or not tags or not text:
-        if not title:
-            flash('You must give your post a title.')
-        if not tags:
-            flash('You must give your post at least one tag.')
-        if not text:
-            flash('You must give your post a text body.')
+    if not title:
+        flash('You must give your post a title.')
+    elif not tags:
+        flash('You must give your post at least one tag.')
+    elif not text:
+        flash('You must give your post a text body.')
     else:
         User(session['username']).add_post(title, tags, text)
 
@@ -68,7 +67,7 @@ def date():
     return datetime.now().strftime('%Y-%m-%d')
 ```
 
-With both the `user` and `post` variables, we can create a `(:User)-[:PUBLISHED]->(:Post)` relationship in the graph by passing a [`py2neo.Relationship`](http://py2neo.org/2.0/essentials.html#relationships) object to `Graph.create()`. Finally, the tags are split on commas and lowercased. For each of these tags, a relationship `(:Tag)-[:TAGGED]->(:Post)` is created. We use the `Graph.merge_one()` method to ensure we are finding or creating a `Tag` node with the given `name` property.
+With both the `user` and `post` variables, we can create a `(:User)-[:PUBLISHED]->(:Post)` relationship in the graph by passing a [`py2neo.Relationship`](http://py2neo.org/2.0/essentials.html#relationships) object to `Graph.create()`. Finally, the tags are split on commas and lowercased. For each of these tags, a relationship `(:Tag)-[:TAGGED]->(:Post)` is created. We use the [`Graph.merge_one()`](http://py2neo.org/2.0/essentials.html#py2neo.Graph.merge_one) method to ensure we are finding or creating a `Tag` node with the given `name` property.
 
 The form where a user adds a new post is located in `index.html`:
 

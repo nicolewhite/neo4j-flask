@@ -15,7 +15,7 @@ pip install passlib
 pip install bcrypt
 ```
 
-If we execute `pip freeze` again, we'll see that we have a lot more packages installed now:
+If we execute `pip freeze` again, we'll see that we have more packages installed now:
 
 ```
 pip freeze
