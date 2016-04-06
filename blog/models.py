@@ -50,8 +50,10 @@ class User:
         graph.create(rel)
 
         tags = [x.strip() for x in tags.lower().split(',')]
-        for t in set(tags):
-            tag = graph.merge_one("Tag", "name", t)
+        for name in set(tags):
+            tag = Node("Tag", name=name)
+            graph.merge(tag)
+
             rel = Relationship(tag, "TAGGED", post)
             graph.create(rel)
 
@@ -68,7 +70,7 @@ class User:
         ORDER BY post.timestamp DESC LIMIT 5
         """
 
-        return graph.cypher.execute(query, username=self.username)
+        return graph.run(query, username=self.username)
 
     def get_similar_users(self):
         # Find three users who are most similar to the logged-in user
@@ -82,7 +84,7 @@ class User:
         RETURN they.username AS similar_user, tags
         """
 
-        return graph.cypher.execute(query, username=self.username)
+        return graph.run(query, username=self.username)
 
     def get_commonality_of_user(self, other):
         # Find how many of the logged-in user's posts the other user
@@ -96,7 +98,7 @@ class User:
                COLLECT(DISTINCT tag.name) AS tags
         """
 
-        return graph.cypher.execute(query, they=other.username, you=self.username)[0]
+        return graph.run(query, they=other.username, you=self.username).next
 
 def get_todays_recent_posts():
     query = """
@@ -106,7 +108,7 @@ def get_todays_recent_posts():
     ORDER BY post.timestamp DESC LIMIT 5
     """
 
-    return graph.cypher.execute(query, today=date())
+    return graph.run(query, today=date())
 
 def timestamp():
     epoch = datetime.utcfromtimestamp(0)
